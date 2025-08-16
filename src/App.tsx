@@ -7,6 +7,7 @@ import Skills from './components/sections/Skills';
 import Projects from './components/sections/Projects';
 import Contact from './components/sections/Contact';
 import Showcase from './components/sections/Showcase';
+import CProgramming from './components/sections/CProgramming';
 import ParticleBackground from './components/animations/ParticleBackground';
 import CustomCursor from './components/animations/CustomCursor';
 import ScrollProgress from './components/animations/ScrollProgress';
@@ -40,6 +41,7 @@ const App: React.FC = () => {
             <Skills />
             <Projects />
             <Showcase />
+            <CProgramming />
             <Contact />
           </main>
           <Footer role="contentinfo" />

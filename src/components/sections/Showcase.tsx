@@ -40,7 +40,7 @@ function createInsertionSortSteps(input: number[]): Step[] {
   const arr = clone(input);
   const steps: Step[] = [];
   for (let i = 1; i < arr.length; i++) {
-    let key = arr[i];
+    const key = arr[i];
     let j = i - 1;
     while (j >= 0 && arr[j] > key) {
       steps.push({ type: 'compare', indices: [j, j + 1], arraySnapshot: clone(arr) });
@@ -228,6 +228,40 @@ function getPseudocode(algorithm: Algorithm, language: 'python' | 'javascript' |
   ].join('\n');
 }
 
+// Algorithm complexity helper functions
+function getTimeComplexity(algorithm: Algorithm): string {
+  switch (algorithm) {
+    case 'bubble': return 'O(n²)';
+    case 'insertion': return 'O(n²)';
+    case 'selection': return 'O(n²)';
+    case 'merge': return 'O(n log n)';
+    case 'quick': return 'O(n log n) average, O(n²) worst';
+    default: return 'O(n²)';
+  }
+}
+
+function getSpaceComplexity(algorithm: Algorithm): string {
+  switch (algorithm) {
+    case 'bubble': return 'O(1)';
+    case 'insertion': return 'O(1)';
+    case 'selection': return 'O(1)';
+    case 'merge': return 'O(n)';
+    case 'quick': return 'O(log n) average';
+    default: return 'O(1)';
+  }
+}
+
+function getStability(algorithm: Algorithm): string {
+  switch (algorithm) {
+    case 'bubble': return 'Stable';
+    case 'insertion': return 'Stable';
+    case 'selection': return 'Unstable';
+    case 'merge': return 'Stable';
+    case 'quick': return 'Unstable';
+    default: return 'Varies';
+  }
+}
+
 const BAR_COLORS = {
   default: 'bg-primary-500',
   compare: 'bg-amber-400',
@@ -274,91 +308,166 @@ const Showcase: React.FC = () => {
     <section id="showcase" className="py-20 relative">
       <div className="absolute inset-0 bg-dark-600 opacity-50" />
       <div className="container mx-auto px-6 relative z-10">
-        <motion.div ref={titleRef as any} animate={titleAnim} className="flex flex-col items-center mb-12 text-center">
+        <motion.div ref={titleRef as React.RefObject<HTMLDivElement>} animate={titleAnim} className="flex flex-col items-center mb-12 text-center">
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">Interactive Showcase</span>
           <h2 className="text-3xl md:text-4xl font-bold mb-4">Algorithm Visualizer</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-4" />
           <p className="max-w-2xl text-gray-300">Explore multiple sorting algorithms step-by-step with live visualization and pseudocode in different languages.</p>
         </motion.div>
 
-        {/* Controls */}
-        <div className="flex flex-wrap gap-3 justify-center mb-8">
-          <select
-            value={algorithm}
-            onChange={(e) => { setAlgorithm(e.target.value as Algorithm); reset(); }}
-            className="bg-dark-700 text-white px-4 py-2 rounded-md border border-dark-500"
-            aria-label="Choose algorithm"
-          >
-            <option value="bubble">Bubble Sort</option>
-            <option value="insertion">Insertion Sort</option>
-            <option value="selection">Selection Sort</option>
-            <option value="merge">Merge Sort</option>
-            <option value="quick">Quick Sort</option>
-          </select>
+        {/* Enhanced Controls with Mobile Optimization */}
+        <div className="flex flex-col sm:flex-row flex-wrap gap-3 justify-center mb-8">
+          {/* Algorithm Selection */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <select
+              value={algorithm}
+              onChange={(e) => { setAlgorithm(e.target.value as Algorithm); reset(); }}
+              className="bg-dark-700 text-white px-4 py-3 rounded-md border border-dark-500 touch-target text-responsive"
+              aria-label="Choose algorithm"
+            >
+              <option value="bubble">Bubble Sort</option>
+              <option value="insertion">Insertion Sort</option>
+              <option value="selection">Selection Sort</option>
+              <option value="merge">Merge Sort</option>
+              <option value="quick">Quick Sort</option>
+            </select>
 
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as any)}
-            className="bg-dark-700 text-white px-4 py-2 rounded-md border border-dark-500"
-            aria-label="Choose language for pseudocode"
-          >
-            <option value="python">Python</option>
-            <option value="javascript">JavaScript</option>
-            <option value="csharp">C#</option>
-          </select>
+            <select
+              value={language}
+              onChange={(e) => setLanguage(e.target.value as Algorithm)}
+              className="bg-dark-700 text-white px-4 py-3 rounded-md border border-dark-500 touch-target text-responsive"
+              aria-label="Choose language for pseudocode"
+            >
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="csharp">C#</option>
+            </select>
+          </div>
 
-          <input
-            type="range"
-            min={100}
-            max={1000}
-            step={50}
-            value={speedMs}
-            onChange={(e) => setSpeedMs(Number(e.target.value))}
-            className="w-48"
-          />
+          {/* Speed Control */}
+          <div className="flex flex-col gap-2 w-full sm:w-auto">
+            <label className="text-sm text-gray-400 text-center sm:text-left">Speed: {speedMs}ms</label>
+            <input
+              type="range"
+              min={100}
+              max={1000}
+              step={50}
+              value={speedMs}
+              onChange={(e) => setSpeedMs(Number(e.target.value))}
+              className="w-full sm:w-48 touch-target"
+              aria-label="Animation speed control"
+            />
+          </div>
 
-          <div className="flex gap-2">
-            <motion.button onClick={() => (isPlaying ? pause() : play())} whileHover={{ y: -2 }} className="px-4 py-2 rounded-lg bg-primary-500 text-white flex items-center gap-2">
-              {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-              <span>{isPlaying ? 'Pause' : 'Play'}</span>
+          {/* Control Buttons */}
+          <div className="flex gap-2 justify-center sm:justify-start w-full sm:w-auto">
+            <motion.button 
+              onClick={() => (isPlaying ? pause() : play())} 
+              whileHover={{ y: -2 }} 
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-3 rounded-lg bg-primary-500 text-white flex items-center gap-2 touch-target text-responsive"
+            >
+              {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+              <span className="hidden sm:inline">{isPlaying ? 'Pause' : 'Play'}</span>
             </motion.button>
-            <motion.button onClick={reset} whileHover={{ y: -2 }} className="px-4 py-2 rounded-lg bg-dark-600 text-white flex items-center gap-2 border border-dark-400">
-              <RotateCcw size={16} />
-              <span>Reset</span>
+            <motion.button 
+              onClick={reset} 
+              whileHover={{ y: -2 }} 
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-3 rounded-lg bg-dark-600 text-white flex items-center gap-2 border border-dark-400 touch-target text-responsive"
+            >
+              <RotateCcw size={18} />
+              <span className="hidden sm:inline">Reset</span>
             </motion.button>
-            <motion.button onClick={shuffle} whileHover={{ y: -2 }} className="px-4 py-2 rounded-lg bg-dark-600 text-white flex items-center gap-2 border border-dark-400">
-              <GitBranch size={16} />
-              <span>Shuffle</span>
+            <motion.button 
+              onClick={shuffle} 
+              whileHover={{ y: -2 }} 
+              whileTap={{ scale: 0.95 }}
+              className="px-4 py-3 rounded-lg bg-dark-600 text-white flex items-center gap-2 border border-dark-400 touch-target text-responsive"
+            >
+              <GitBranch size={18} />
+              <span className="hidden sm:inline">Shuffle</span>
             </motion.button>
           </div>
         </div>
 
-        {/* Visualization + Pseudocode */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6" ref={gridRef as any}>
-          <motion.div animate={gridAnim} className="lg:col-span-7 bg-dark-700 rounded-xl border border-dark-500 p-6">
-            <div className="h-72 md:h-96 flex items-end gap-1">
+        {/* Enhanced Visualization + Pseudocode with Mobile Optimization */}
+        <div className="grid grid-cols-1 xl:grid-cols-12 gap-6" ref={gridRef as React.RefObject<HTMLDivElement>}>
+          {/* Algorithm Visualization */}
+          <motion.div animate={gridAnim} className="xl:col-span-7 bg-dark-700 rounded-xl border border-dark-500 p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">{algorithm.charAt(0).toUpperCase() + algorithm.slice(1)} Sort Visualization</h3>
+              <div className="text-sm text-gray-400">
+                Step {Math.min(stepIndex, steps.length)} / {steps.length}
+              </div>
+            </div>
+            
+            {/* Enhanced Bar Chart */}
+            <div className="h-64 sm:h-80 lg:h-96 flex items-end gap-1 p-4 bg-dark-800 rounded-lg">
               {currentArray.map((value, idx) => {
                 const step = steps[Math.min(stepIndex, steps.length - 1)];
                 const isCompare = step?.type === 'compare' && step.indices.includes(idx);
                 const isSwap = step?.type === 'swap' && step.indices.includes(idx);
                 const isOverwrite = step?.type === 'overwrite' && step.indices.includes(idx);
                 const barClass = isSwap ? BAR_COLORS.swap : isOverwrite ? BAR_COLORS.overwrite : isCompare ? BAR_COLORS.compare : BAR_COLORS.default;
+                
                 return (
-                  <div key={idx} className={`flex-1 ${barClass} rounded-t-sm transition-all duration-200`} style={{ height: `${Math.max(4, value) * 2}px` }} title={`${value}`} />
+                  <motion.div 
+                    key={idx} 
+                    className={`flex-1 ${barClass} rounded-t-sm transition-all duration-300 ease-out relative group`} 
+                    style={{ height: `${Math.max(4, value) * 2}px` }}
+                    whileHover={{ scale: 1.05 }}
+                    title={`Value: ${value}`}
+                  >
+                    {/* Value label on hover */}
+                    <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-dark-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                      {value}
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>
-            <div className="mt-4 text-sm text-gray-300">Step {Math.min(stepIndex, steps.length)} / {steps.length}</div>
+            
+            {/* Progress Bar */}
+            <div className="mt-4">
+              <div className="w-full bg-dark-600 rounded-full h-2">
+                <motion.div 
+                  className="bg-primary-500 h-2 rounded-full"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(stepIndex / Math.max(steps.length, 1)) * 100}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </div>
           </motion.div>
 
-          <motion.div animate={gridAnim} className="lg:col-span-5 bg-dark-700 rounded-xl border border-dark-500 p-6">
-            <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-mono text-gray-400">Pseudocode ({language})</h3>
-              <span className="text-xs text-gray-500">{algorithm} sort</span>
+          {/* Enhanced Pseudocode Panel */}
+          <motion.div animate={gridAnim} className="xl:col-span-5 bg-dark-700 rounded-xl border border-dark-500 p-4 sm:p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Pseudocode</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray-400 bg-dark-600 px-2 py-1 rounded">{language.toUpperCase()}</span>
+                <span className="text-xs text-gray-500">{algorithm} sort</span>
+              </div>
             </div>
-            <pre className="text-gray-200 text-sm whitespace-pre-wrap leading-6">
-              {getPseudocode(algorithm, language)}
-            </pre>
+            
+            {/* Syntax Highlighted Pseudocode */}
+            <div className="bg-dark-800 rounded-lg p-4 overflow-auto max-h-96">
+              <pre className="text-gray-200 text-sm sm:text-base whitespace-pre-wrap leading-relaxed font-mono">
+                <code className="language-pseudocode">
+                  {getPseudocode(algorithm, language)}
+                </code>
+              </pre>
+            </div>
+            
+            {/* Algorithm Info */}
+            <div className="mt-4 p-3 bg-dark-600 rounded-lg">
+              <div className="text-xs text-gray-400 space-y-1">
+                <div><strong>Time Complexity:</strong> {getTimeComplexity(algorithm)}</div>
+                <div><strong>Space Complexity:</strong> {getSpaceComplexity(algorithm)}</div>
+                <div><strong>Stability:</strong> {getStability(algorithm)}</div>
+              </div>
+            </div>
           </motion.div>
         </div>
 

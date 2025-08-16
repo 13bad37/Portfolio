@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowDown, Code, GitBranch, Terminal } from 'lucide-react';
 import gsap from 'gsap';
+import { useParallax } from '../../hooks/useParallax';
 
 const Hero: React.FC = () => {
   const textRef = useRef<HTMLHeadingElement>(null);
+  const { ref: parallaxRef, transform } = useParallax({ speed: 0.3 });
 
   useEffect(() => {
     if (!textRef.current) return;
@@ -32,9 +34,16 @@ const Hero: React.FC = () => {
   }, []);
   
   return (
-    <section id="home" className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" role="region" aria-labelledby="hero-heading">
+    <section 
+      ref={parallaxRef}
+      id="home" 
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 parallax" 
+      style={{ transform }}
+      role="region" 
+      aria-labelledby="hero-heading"
+    >
       {/* Floating elements animation */}
-      <div className="absolute inset-0 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none transform-gpu">
         <motion.div
           className="absolute top-1/4 left-1/4 text-primary-500/20"
           animate={{ 
@@ -134,18 +143,27 @@ const Hero: React.FC = () => {
           >
             <motion.a
               href="#projects"
-              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-medium transition-colors shadow-lg shadow-primary-500/20 flex items-center justify-center"
-              whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(139, 92, 246, 0.5)' }}
-              whileTap={{ y: -2 }}
+              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg shadow-primary-500/20 flex items-center justify-center smooth-hover will-change-transform"
+              whileHover={{ 
+                y: -8, 
+                boxShadow: '0 20px 40px -5px rgba(139, 92, 246, 0.6)',
+                scale: 1.05
+              }}
+              whileTap={{ y: -2, scale: 0.98 }}
               aria-label="View my projects"
             >
               View My Work
             </motion.a>
             <motion.a
               href="#contact"
-              className="bg-transparent hover:bg-white/10 text-white border border-white/20 px-8 py-3 rounded-lg font-medium transition-colors flex items-center justify-center"
-              whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(255, 255, 255, 0.1)' }}
-              whileTap={{ y: -2 }}
+              className="bg-transparent hover:bg-white/10 text-white border border-white/20 px-8 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center smooth-hover will-change-transform"
+              whileHover={{ 
+                y: -8, 
+                boxShadow: '0 20px 40px -5px rgba(255, 255, 255, 0.15)',
+                scale: 1.05,
+                borderColor: 'rgba(139, 92, 246, 0.5)'
+              }}
+              whileTap={{ y: -2, scale: 0.98 }}
               aria-label="Get in touch with me"
             >
               Get In Touch

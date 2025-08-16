@@ -34,7 +34,7 @@ export const useAnimationOnScroll = ({
   return { ref, controls, inView };
 };
 
-export const fadeIn = (direction: 'up' | 'down' | 'left' | 'right' | 'none' = 'up', delay = 0) => {
+export const useFadeIn = (direction: 'up' | 'down' | 'left' | 'right' | 'none' = 'up', delay = 0) => {
   return useAnimationOnScroll({
     hidden: {
       y: direction === 'up' ? 40 : direction === 'down' ? -40 : 0,
@@ -49,6 +49,8 @@ export const fadeIn = (direction: 'up' | 'down' | 'left' | 'right' | 'none' = 'u
     delay,
   });
 };
+
+export const fadeIn = useFadeIn;
 
 export const staggerChildren = {
   hidden: { opacity: 0 },
@@ -72,7 +74,7 @@ export const staggerItem = {
   },
 };
 
-export const scaleIn = (delay = 0) => {
+export const useScaleIn = (delay = 0) => {
   return useAnimationOnScroll({
     hidden: { scale: 0.8, opacity: 0 },
     visible: { scale: 1, opacity: 1 },
@@ -80,10 +82,13 @@ export const scaleIn = (delay = 0) => {
   });
 };
 
-export const rotateIn = (delay = 0) => {
+export const useRotateIn = (delay = 0) => {
   return useAnimationOnScroll({
     hidden: { rotate: -10, opacity: 0 },
     visible: { rotate: 0, opacity: 1 },
     delay,
   });
 };
+
+export const scaleIn = useScaleIn;
+export const rotateIn = useRotateIn;

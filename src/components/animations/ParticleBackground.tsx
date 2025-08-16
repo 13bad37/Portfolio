@@ -1,5 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useMousePosition } from '../../hooks/useMousePosition';
+import { useThrottledScroll } from '../../hooks/useThrottledScroll';
 
 interface Particle {
   x: number;
@@ -14,7 +15,9 @@ interface Particle {
 const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mousePosition = useMousePosition();
+  const { scrollY } = useThrottledScroll(16);
   const particlesArrayRef = useRef<Particle[]>([]);
+  const animationIdRef = useRef<number>();
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -23,7 +26,6 @@ const ParticleBackground: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;
     let lastAddTime = 0;
     const framesPerParticle = 5; // Add a particle every 5 frames
 
@@ -35,31 +37,32 @@ const ParticleBackground: React.FC = () => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
-    // Create particles
+    // Create particles with performance optimization
     const createParticle = (x: number, y: number) => {
       const now = performance.now();
       if (now - lastAddTime < framesPerParticle) return;
       lastAddTime = now;
 
-      const size = Math.random() * 5 + 1;
-      const speedX = Math.random() * 2 - 1;
-      const speedY = Math.random() * 2 - 1;
+      const size = Math.random() * 4 + 1;
+      const speedX = Math.random() * 1.5 - 0.75;
+      const speedY = Math.random() * 1.5 - 0.75;
       const hue = Math.random() * 60 + 220; // Blue to purple range
-      const opacity = Math.random() * 0.5 + 0.1;
+      const opacity = Math.random() * 0.4 + 0.1;
 
       particlesArrayRef.current.push({
         x,
         y,
         size,
-        speedX,
-        speedY,
+        speedX: speedX + (scrollY * 0.001), // Scroll influence
+        speedY: speedY + (scrollY * 0.001),
         hue,
         opacity,
       });
 
-      // Limit the number of particles
-      if (particlesArrayRef.current.length > 100) {
-        particlesArrayRef.current.splice(0, 20);
+      // Limit particles for performance
+      const maxParticles = window.innerWidth < 768 ? 50 : 80;
+      if (particlesArrayRef.current.length > maxParticles) {
+        particlesArrayRef.current.splice(0, 10);
       }
     };
 
@@ -105,15 +108,20 @@ const ParticleBackground: React.FC = () => {
       });
     };
 
-    // Animation loop
+    // Optimized animation loop
     const animate = () => {
       drawParticles();
-      createParticle(mousePosition.x, mousePosition.y);
-      animationFrameId = requestAnimationFrame(animate);
+      
+      // Throttle particle creation on mouse movement
+      if (Math.random() > 0.7) {
+        createParticle(mousePosition.x, mousePosition.y);
+      }
+      
+      animationIdRef.current = requestAnimationFrame(animate);
     };
 
     // Start the animation
-    animationFrameId = requestAnimationFrame(animate);
+    animationIdRef.current = requestAnimationFrame(animate);
 
     // Handle mouse movement
     const mouseMoveHandler = (e: MouseEvent) => {
@@ -135,9 +143,11 @@ const ParticleBackground: React.FC = () => {
     return () => {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', mouseMoveHandler);
-      cancelAnimationFrame(animationFrameId);
+      if (animationIdRef.current) {
+        cancelAnimationFrame(animationIdRef.current);
+      }
     };
-  }, [mousePosition]);
+  }, [mousePosition, scrollY]);
 
   return (
     <canvas
