@@ -347,16 +347,44 @@ const Showcase: React.FC = () => {
           {/* Speed Control */}
           <div className="flex flex-col gap-2 w-full sm:w-auto">
             <label className="text-sm text-gray-400 text-center sm:text-left">Speed: {speedMs}ms</label>
-            <input
-              type="range"
-              min={100}
-              max={1000}
-              step={50}
-              value={speedMs}
-              onChange={(e) => setSpeedMs(Number(e.target.value))}
-              className="w-full sm:w-48 touch-target"
-              aria-label="Animation speed control"
-            />
+            <div className="relative w-full sm:w-48 px-2">
+              <div className="relative">
+                <div className="h-2 bg-dark-600 rounded-lg">
+                  <div 
+                    className="h-2 bg-gradient-to-r from-primary-500 to-primary-600 rounded-lg transition-all duration-200"
+                    style={{ width: `${((speedMs - 100) / 900) * 100}%` }}
+                  />
+                </div>
+                <input
+                  type="range"
+                  min={100}
+                  max={1000}
+                  step={50}
+                  value={speedMs}
+                  onChange={(e) => setSpeedMs(Number(e.target.value))}
+                  className="absolute top-0 left-0 w-full h-2 appearance-none bg-transparent cursor-pointer
+                    [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:w-5 
+                    [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-gradient-to-br 
+                    [&::-webkit-slider-thumb]:from-primary-400 [&::-webkit-slider-thumb]:to-primary-600 
+                    [&::-webkit-slider-thumb]:shadow-lg [&::-webkit-slider-thumb]:shadow-primary-500/30
+                    [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-dark-400
+                    [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:duration-200
+                    [&::-webkit-slider-thumb]:relative [&::-webkit-slider-thumb]:-mt-1.5
+                    hover:[&::-webkit-slider-thumb]:scale-110 hover:[&::-webkit-slider-thumb]:shadow-xl
+                    hover:[&::-webkit-slider-thumb]:shadow-primary-500/40
+                    [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:rounded-full 
+                    [&::-moz-range-thumb]:bg-gradient-to-br [&::-moz-range-thumb]:from-primary-400 
+                    [&::-moz-range-thumb]:to-primary-600 [&::-moz-range-thumb]:border-none 
+                    [&::-moz-range-thumb]:shadow-lg [&::-moz-range-thumb]:shadow-primary-500/30
+                    hover:[&::-moz-range-thumb]:scale-110 focus:outline-none"
+                  aria-label="Animation speed control"
+                />
+              </div>
+              <div className="flex justify-between mt-1 text-xs text-gray-500">
+                <span>Fast</span>
+                <span>Slow</span>
+              </div>
+            </div>
           </div>
 
           {/* Control Buttons */}
@@ -394,7 +422,7 @@ const Showcase: React.FC = () => {
         {/* Enhanced Visualization + Pseudocode with Mobile Optimization */}
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6" ref={gridRef as React.RefObject<HTMLDivElement>}>
           {/* Algorithm Visualization */}
-          <motion.div animate={gridAnim} className="xl:col-span-7 bg-dark-700 rounded-xl border border-dark-500 p-4 sm:p-6">
+          <motion.div animate={gridAnim} className="xl:col-span-7 bg-dark-700 rounded-xl border border-dark-500 p-4 sm:p-6 overflow-hidden">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white">{algorithm.charAt(0).toUpperCase() + algorithm.slice(1)} Sort Visualization</h3>
               <div className="text-sm text-gray-400">

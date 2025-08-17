@@ -10,6 +10,13 @@ const Footer: React.FC = () => {
       top: 0,
       behavior: 'smooth',
     });
+    // Add a small delay to ensure smooth loading
+    setTimeout(() => {
+      const element = document.getElementById('home');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   };
 
   return (
@@ -33,7 +40,7 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
           {/* Logo and Tagline */}
           <div className="flex flex-col" role="complementary" aria-labelledby="footer-brand">
-            <h3 id="footer-brand" className="text-2xl font-bold text-white mb-4">Nonso<span className="text-primary-500">.</span>dev</h3>
+            <h3 id="footer-brand" className="text-2xl font-bold text-white mb-4">nonso<span className="text-primary-500">.</span>software</h3>
             <p className="text-gray-400 mb-4">Turning ideas into elegant and functional digital experiences through code.</p>
             
             {/* Social Icons */}
@@ -79,7 +86,7 @@ const Footer: React.FC = () => {
           <nav role="navigation" aria-labelledby="footer-nav-heading">
             <h3 id="footer-nav-heading" className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Quick Links</h3>
             <ul className="space-y-2" role="list">
-              {['Home', 'About', 'Skills', 'Projects', 'Showcase', 'C Programming', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Projects', 'Showcase', 'Programming Expertise', 'Contact'].map((item) => (
                 <li key={item} role="listitem">
                   <motion.a
                     href={`#${item.toLowerCase().replace(' ', '-')}`}
@@ -88,7 +95,8 @@ const Footer: React.FC = () => {
                     aria-label={`Go to ${item} section`}
                     onClick={(e) => {
                       e.preventDefault();
-                      document.querySelector(`#${item.toLowerCase().replace(' ', '-')}`)?.scrollIntoView({
+                      const id = item === 'Programming Expertise' ? '#programming-expertise' : `#${item.toLowerCase().replace(' ', '-')}`;
+                      document.querySelector(id)?.scrollIntoView({
                         behavior: 'smooth',
                       });
                     }}

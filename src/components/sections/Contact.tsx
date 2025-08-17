@@ -1,115 +1,42 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
-import { Send, Github, Linkedin, Mail, AlertCircle, Check } from 'lucide-react';
+import { Github, Linkedin, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { fadeIn } from '../../hooks/useAnimation';
-
-interface FormValues {
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-}
-
-interface FormErrors {
-  name?: string;
-  email?: string;
-  subject?: string;
-  message?: string;
-}
-
-const initialFormValues: FormValues = {
-  name: '',
-  email: '',
-  subject: '',
-  message: '',
-};
+import LocationWeather from '../ui/LocationWeather';
+import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
 
 const Contact: React.FC = () => {
-  const [formValues, setFormValues] = useState<FormValues>(initialFormValues);
-  const [formErrors, setFormErrors] = useState<FormErrors>({});
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
-  const formRef = useRef<HTMLFormElement>(null);
-
   const titleAnimation = fadeIn('up');
-  const formAnimation = fadeIn('right', 0.3);
-  const contactInfoAnimation = fadeIn('left', 0.3);
+  const contactInfoAnimation = fadeIn('up', 0.3);
+  const socialAnimation = fadeIn('up', 0.5);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    
-    setFormValues(prev => ({
-      ...prev,
-      [name]: value,
-    }));
-
-    // Clear error when user types
-    if (formErrors[name as keyof FormErrors]) {
-      setFormErrors(prev => ({
-        ...prev,
-        [name]: undefined,
-      }));
+  const contactMethods = [
+    {
+      icon: <Mail className="h-8 w-8 text-primary-400" />,
+      title: 'Email',
+      value: 'nonsognkire@gmail.com',
+      href: 'mailto:nonsognkire@gmail.com',
+      description: 'Send me an email for professional inquiries'
+    },
+    {
+      icon: <Linkedin className="h-8 w-8 text-blue-400" />,
+      title: 'LinkedIn',
+      value: 'linkedin.com/in/nonso-nkire',
+      href: 'https://www.linkedin.com/in/nonso-nkire-1578122a7/',
+      description: 'Connect with me on LinkedIn'
+    },
+    {
+      icon: <Github className="h-8 w-8 text-gray-400" />,
+      title: 'GitHub',
+      value: 'github.com/13bad37',
+      href: 'https://github.com/13bad37',
+      description: 'Check out my code repositories'
     }
-  };
-
-  const validateForm = (): boolean => {
-    const errors: FormErrors = {};
-    let isValid = true;
-
-    if (!formValues.name.trim()) {
-      errors.name = 'Name is required';
-      isValid = false;
-    }
-
-    if (!formValues.email.trim()) {
-      errors.email = 'Email is required';
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)) {
-      errors.email = 'Please enter a valid email address';
-      isValid = false;
-    }
-
-    if (!formValues.subject.trim()) {
-      errors.subject = 'Subject is required';
-      isValid = false;
-    }
-
-    if (!formValues.message.trim()) {
-      errors.message = 'Message is required';
-      isValid = false;
-    } else if (formValues.message.trim().length < 10) {
-      errors.message = 'Message must be at least 10 characters';
-      isValid = false;
-    }
-
-    setFormErrors(errors);
-    return isValid;
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setSubmitStatus('success');
-      setFormValues(initialFormValues);
-
-      // Reset status after 5 seconds
-      setTimeout(() => {
-        setSubmitStatus('idle');
-      }, 5000);
-    }, 1500);
-  };
+  ];
 
   return (
     <section id="contact" className="py-20 relative" role="region" aria-labelledby="contact-heading">
+      <EnhancedFloatingElements variant="floating-icons" density="light" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-600 to-dark-500 opacity-60" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
@@ -121,306 +48,123 @@ const Contact: React.FC = () => {
           <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold mb-4">Contact Me</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">
-            Have a project in mind or want to discuss potential opportunities? I'd love to hear from you!
+            Ready to collaborate or have questions about my work? I'm always excited to discuss new projects, 
+            creative ideas, or opportunities to contribute to your vision.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-10">
-          <motion.div 
-            className="lg:col-span-3"
-            {...formAnimation}
-          >
-            <div className="bg-dark-600 rounded-2xl overflow-hidden border border-dark-400 shadow-xl" role="form" aria-labelledby="contact-form-heading">
-              <div className="p-8">
-                <h3 id="contact-form-heading" className="text-2xl font-bold mb-6 text-white">Send Me a Message</h3>
-                
-                {submitStatus === 'success' && (
-                  <motion.div 
-                    className="flex items-center gap-3 p-4 bg-success-500/20 text-success-500 rounded-lg mb-6"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    <Check className="flex-shrink-0" aria-hidden="true" />
-                    <span>Your message has been sent successfully! I'll get back to you soon.</span>
-                  </motion.div>
-                )}
-
-                {submitStatus === 'error' && (
-                  <motion.div 
-                    className="flex items-center gap-3 p-4 bg-error-500/20 text-error-500 rounded-lg mb-6"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    <AlertCircle className="flex-shrink-0" aria-hidden="true" />
-                    <span>Oops! Something went wrong. Please try again later.</span>
-                  </motion.div>
-                )}
-
-                <form ref={formRef} onSubmit={handleSubmit} noValidate>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium text-gray-300 mb-2">
-                        Name
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="text"
-                          id="name"
-                          name="name"
-                          value={formValues.name}
-                          onChange={handleChange}
-                          className={`w-full px-4 py-3 bg-dark-500 border ${
-                            formErrors.name ? 'border-error-500' : 'border-dark-400 focus:border-primary-500'
-                          } rounded-lg text-white focus:outline-none transition-colors`}
-                          placeholder="Your name"
-                          aria-required="true"
-                          aria-invalid={!!formErrors.name}
-                          aria-describedby={formErrors.name ? "name-error" : undefined}
-                        />
-                        {formErrors.name && (
-                          <p id="name-error" className="absolute -bottom-6 left-0 text-xs text-error-500 mt-1" role="alert">{formErrors.name}</p>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div>
-                      <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                        Email
-                      </label>
-                      <div className="relative">
-                        <input
-                          type="email"
-                          id="email"
-                          name="email"
-                          value={formValues.email}
-                          onChange={handleChange}
-                          className={`w-full px-4 py-3 bg-dark-500 border ${
-                            formErrors.email ? 'border-error-500' : 'border-dark-400 focus:border-primary-500'
-                          } rounded-lg text-white focus:outline-none transition-colors`}
-                          placeholder="Your email"
-                          aria-required="true"
-                          aria-invalid={!!formErrors.email}
-                          aria-describedby={formErrors.email ? "email-error" : undefined}
-                        />
-                        {formErrors.email && (
-                          <p id="email-error" className="absolute -bottom-6 left-0 text-xs text-error-500 mt-1" role="alert">{formErrors.email}</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="mb-6">
-                    <label htmlFor="subject" className="block text-sm font-medium text-gray-300 mb-2">
-                      Subject
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        id="subject"
-                        name="subject"
-                        value={formValues.subject}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 bg-dark-500 border ${
-                          formErrors.subject ? 'border-error-500' : 'border-dark-400 focus:border-primary-500'
-                        } rounded-lg text-white focus:outline-none transition-colors`}
-                        placeholder="Subject of your message"
-                        aria-required="true"
-                        aria-invalid={!!formErrors.subject}
-                        aria-describedby={formErrors.subject ? "subject-error" : undefined}
-                      />
-                      {formErrors.subject && (
-                        <p id="subject-error" className="absolute -bottom-6 left-0 text-xs text-error-500 mt-1" role="alert">{formErrors.subject}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="mb-6">
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-300 mb-2">
-                      Message
-                    </label>
-                    <div className="relative">
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={formValues.message}
-                        onChange={handleChange}
-                        rows={5}
-                        className={`w-full px-4 py-3 bg-dark-500 border ${
-                          formErrors.message ? 'border-error-500' : 'border-dark-400 focus:border-primary-500'
-                        } rounded-lg text-white focus:outline-none transition-colors`}
-                        placeholder="Write your message here..."
-                        aria-required="true"
-                        aria-invalid={!!formErrors.message}
-                        aria-describedby={formErrors.message ? "message-error" : undefined}
-                      ></textarea>
-                      {formErrors.message && (
-                        <p id="message-error" className="absolute -bottom-6 left-0 text-xs text-error-500 mt-1" role="alert">{formErrors.message}</p>
-                      )}
-                    </div>
-                  </div>
-                  
-                  <div className="mt-10">
-                    <motion.button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className={`w-full flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-white ${
-                        isSubmitting ? 'bg-primary-700' : 'bg-primary-500 hover:bg-primary-600'
-                      } transition-colors`}
-                      whileHover={!isSubmitting ? { y: -3 } : {}}
-                      whileTap={!isSubmitting ? { y: -1 } : {}}
-                      aria-label={isSubmitting ? "Sending message" : "Send message"}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            aria-hidden="true"
-                          >
-                            <Send size={18} />
-                          </motion.div>
-                          <span>Sending...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Send size={18} aria-hidden="true" />
-                          <span>Send Message</span>
-                        </>
-                      )}
-                    </motion.button>
-                  </div>
-                </form>
-              </div>
+        <motion.div 
+          className="max-w-5xl mx-auto"
+          {...contactInfoAnimation}
+        >
+          {/* Location and Weather - moved above contact cards */}
+          <div className="mb-12">
+            <div className="text-center mb-6">
+              <h3 className="text-xl font-semibold text-white mb-2">My Local Time & Weather</h3>
+              <p className="text-gray-400 text-sm">Currently based in Brisbane, Australia</p>
             </div>
-          </motion.div>
+            <div className="w-full max-w-2xl mx-auto">
+              <LocationWeather />
+            </div>
+          </div>
 
-          <motion.div 
-            className="lg:col-span-2"
-            {...contactInfoAnimation}
-          >
-            <div className="bg-dark-600 rounded-2xl overflow-hidden border border-dark-400 shadow-xl h-full" role="complementary" aria-labelledby="contact-info-heading">
-              <div className="p-8">
-                <h3 id="contact-info-heading" className="text-2xl font-bold mb-6 text-white">Contact Information</h3>
-                
-                <p className="text-gray-300 mb-8">
-                  Feel free to get in touch with me through any of the methods below. I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
-                </p>
-                
-                <ul className="space-y-6" role="list" aria-label="Contact methods">
-                  <motion.li 
-                    className="flex items-start"
-                    whileHover={{ x: 5 }}
-                    role="listitem"
-                  >
-                    <div className="bg-primary-500/20 p-3 rounded-lg mr-4" aria-hidden="true">
-                      <Mail className="h-6 w-6 text-primary-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium text-white mb-1">Email</h4>
-                      <a 
-                        href="mailto:nonsognkire@gmail.com" 
-                        className="text-gray-300 hover:text-primary-400 transition-colors"
-                        aria-label="Send email to nonsognkire@gmail.com"
-                      >
-                        nonsognkire@gmail.com
-                      </a>
-                    </div>
-                  </motion.li>
-                  
-                  <motion.li 
-                    className="flex items-start"
-                    whileHover={{ x: 5 }}
-                    role="listitem"
-                  >
-                    <div className="bg-secondary-500/20 p-3 rounded-lg mr-4" aria-hidden="true">
-                      <Linkedin className="h-6 w-6 text-secondary-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium text-white mb-1">LinkedIn</h4>
-                      <a 
-                        href="https://www.linkedin.com/in/nonso-nkire-1578122a7/" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-gray-300 hover:text-secondary-400 transition-colors"
-                        aria-label="Visit Nonso Nkire's LinkedIn profile"
-                      >
-                        linkedin.com/in/nonso-nkire
-                      </a>
-                    </div>
-                  </motion.li>
-                  
-                  <motion.li 
-                    className="flex items-start"
-                    whileHover={{ x: 5 }}
-                    role="listitem"
-                  >
-                    <div className="bg-accent-500/20 p-3 rounded-lg mr-4" aria-hidden="true">
-                      <Github className="h-6 w-6 text-accent-400" />
-                    </div>
-                    <div>
-                      <h4 className="text-lg font-medium text-white mb-1">GitHub</h4>
-                      <a 
-                        href="https://github.com/13bad37" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-gray-300 hover:text-accent-400 transition-colors"
-                        aria-label="Visit Nonso Nkire's GitHub profile"
-                      >
-                        github.com/13bad37
-                      </a>
-                    </div>
-                  </motion.li>
-                </ul>
-                
-                <div className="mt-12">
-                  <h4 className="text-lg font-medium text-white mb-4">Connect With Me</h4>
-                  <div className="flex gap-4" role="list" aria-label="Social media links">
-                    <motion.a
-                      href="https://github.com/13bad37"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-dark-500 p-3 rounded-full text-gray-300 hover:text-white hover:bg-dark-400 transition-colors"
-                      whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                      whileTap={{ y: -2 }}
-                      aria-label="GitHub"
-                      role="listitem"
-                    >
-                      <Github size={24} />
-                    </motion.a>
-                    
-                    <motion.a
-                      href="https://www.linkedin.com/in/nonso-nkire-1578122a7/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="bg-dark-500 p-3 rounded-full text-gray-300 hover:text-white hover:bg-dark-400 transition-colors"
-                      whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                      whileTap={{ y: -2 }}
-                      aria-label="LinkedIn"
-                      role="listitem"
-                    >
-                      <Linkedin size={24} />
-                    </motion.a>
-                    
-                    <motion.a
-                      href="mailto:nonsognkire@gmail.com"
-                      className="bg-dark-500 p-3 rounded-full text-gray-300 hover:text-white hover:bg-dark-400 transition-colors"
-                      whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                      whileTap={{ y: -2 }}
-                      aria-label="Email"
-                      role="listitem"
-                    >
-                      <Mail size={24} />
-                    </motion.a>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {contactMethods.map((method, index) => (
+              <motion.div
+                key={method.title}
+                className="bg-dark-600/80 backdrop-blur-sm rounded-xl border border-dark-400 p-8 text-center group hover:border-primary-500/50 transition-all duration-300"
+                whileHover={{ 
+                  y: -10, 
+                  scale: 1.03,
+                  boxShadow: '0 20px 40px -10px rgba(139, 92, 246, 0.3)',
+                  rotateY: 2
+                }}
+                whileTap={{ scale: 0.98 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-dark-500 rounded-full group-hover:bg-primary-500/20 transition-colors duration-300">
+                    {method.icon}
                   </div>
                 </div>
-              </div>
+                <h3 className="text-xl font-semibold text-white mb-2">{method.title}</h3>
+                <p className="text-gray-400 text-sm mb-4">{method.description}</p>
+                <motion.a
+                  href={method.href}
+                  target={method.href.startsWith('http') ? '_blank' : undefined}
+                  rel={method.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  className="text-primary-400 hover:text-primary-300 transition-colors font-medium inline-flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {method.value}
+                  {method.href.startsWith('http') && <ExternalLink size={16} />}
+                </motion.a>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div 
+            className="bg-dark-600/80 backdrop-blur-sm rounded-2xl border border-dark-400 p-8 text-center"
+            {...socialAnimation}
+          >
+            <h3 className="text-2xl font-bold text-white mb-4">Let's Connect</h3>
+            <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
+              I'm always interested in hearing about new opportunities, discussing technology, 
+              or collaborating on exciting projects. Don't hesitate to reach out!
+            </p>
+            
+            <div className="flex justify-center gap-6">
+              <motion.a
+                href="https://github.com/13bad37"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-dark-500 p-4 rounded-full text-gray-300 hover:text-white hover:bg-gray-600 transition-all duration-300 group"
+                whileHover={{ y: -5, scale: 1.1 }}
+                whileTap={{ y: -2 }}
+                aria-label="GitHub Profile"
+              >
+                <Github size={28} className="group-hover:text-white transition-colors" />
+              </motion.a>
+              
+              <motion.a
+                href="https://www.linkedin.com/in/nonso-nkire-1578122a7/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-dark-500 p-4 rounded-full text-gray-300 hover:text-blue-400 hover:bg-blue-500/20 transition-all duration-300 group"
+                whileHover={{ y: -5, scale: 1.1 }}
+                whileTap={{ y: -2 }}
+                aria-label="LinkedIn Profile"
+              >
+                <Linkedin size={28} className="group-hover:text-blue-400 transition-colors" />
+              </motion.a>
+              
+              <motion.a
+                href="mailto:nonsognkire@gmail.com"
+                className="bg-dark-500 p-4 rounded-full text-gray-300 hover:text-primary-400 hover:bg-primary-500/20 transition-all duration-300 group"
+                whileHover={{ y: -5, scale: 1.1 }}
+                whileTap={{ y: -2 }}
+                aria-label="Send Email"
+              >
+                <Mail size={28} className="group-hover:text-primary-400 transition-colors" />
+              </motion.a>
             </div>
+
+            <motion.div 
+              className="mt-8 pt-8 border-t border-dark-500"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              <p className="text-gray-400 text-sm">
+                <MapPin className="inline mr-2" size={16} />
+                Open to remote opportunities worldwide
+              </p>
+            </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

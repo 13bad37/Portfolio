@@ -7,19 +7,31 @@ import Skills from './components/sections/Skills';
 import Projects from './components/sections/Projects';
 import Contact from './components/sections/Contact';
 import Showcase from './components/sections/Showcase';
-import CProgramming from './components/sections/CProgramming';
+import ProgrammingExpertise from './components/sections/ProgrammingExpertise';
 import ParticleBackground from './components/animations/ParticleBackground';
 import CustomCursor from './components/animations/CustomCursor';
 import ScrollProgress from './components/animations/ScrollProgress';
 import Loader from './components/animations/Loader';
+import { getPerformanceManager } from './utils/performanceManager';
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Initialize performance manager for optimal 120fps performance
+    const performanceManager = getPerformanceManager({
+      targetFPS: 120,
+      adaptiveQuality: true,
+      optimizeForMobile: true
+    });
+
     // Simulate loading time
     const timer = setTimeout(() => {
       setLoading(false);
+      // Optimize memory after initial load
+      setTimeout(() => {
+        performanceManager.optimizeMemory();
+      }, 1000);
     }, 2000);
 
     return () => clearTimeout(timer);
@@ -41,7 +53,7 @@ const App: React.FC = () => {
             <Skills />
             <Projects />
             <Showcase />
-            <CProgramming />
+            <ProgrammingExpertise />
             <Contact />
           </main>
           <Footer role="contentinfo" />

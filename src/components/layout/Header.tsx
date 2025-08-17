@@ -8,7 +8,7 @@ const navItems = [
   { name: 'Skills', href: '#skills' },
   { name: 'Projects', href: '#projects' },
   { name: 'Showcase', href: '#showcase' },
-  { name: 'C Programming', href: '#c-programming' },
+  { name: 'Programming', href: '#programming-expertise' },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -73,7 +73,7 @@ const Header: React.FC = () => {
             aria-label="Nonso Nkire - Software Engineer, go to home section"
           >
             <Code2 className="text-primary-500" />
-            <span>Nonso<span className="text-primary-500">.</span>dev</span>
+            <span>nonso<span className="text-primary-500">.</span>software</span>
           </motion.a>
 
           {/* Desktop Navigation */}
@@ -186,7 +186,7 @@ const Header: React.FC = () => {
                   aria-label="Nonso Nkire - Software Engineer, go to home section"
                 >
                   <Code2 className="text-primary-500" />
-                  <span>Nonso<span className="text-primary-500">.</span>dev</span>
+                  <span>nonso<span className="text-primary-500">.</span>software</span>
                 </motion.a>
                 <motion.button
                   onClick={toggleMenu}

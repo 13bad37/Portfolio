@@ -1,10 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code, ExternalLink, Github, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Code, ExternalLink, Github, X, ChevronRight } from 'lucide-react';
 import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
+import FloatingElements from '../animations/FloatingElements';
+import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
+import AnimatedDivider from '../ui/AnimatedDivider';
 
 interface Project {
   id: number;
@@ -27,7 +30,6 @@ const projects: Project[] = [
     category: "Web Development",
     technologies: ["React", "JavaScript", "CSS3", "HTML5", "API Integration"],
     github: "https://github.com/13bad37/Movie-Application",
-    live: "#",
     features: [
       "Advanced movie search and filtering system",
       "Responsive design with mobile-first approach",
@@ -53,12 +55,11 @@ const projects: Project[] = [
   {
     id: 3,
     title: "Personal Portfolio",
-    description: "A sophisticated portfolio website featuring advanced animations and interactive elements.",
+    description: "This sophisticated portfolio website you're currently viewing, featuring advanced animations and interactive elements.",
     image: "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     category: "Web Development",
     technologies: ["React", "TypeScript", "Framer Motion", "Tailwind CSS"],
-    github: "https://github.com/13bad37",
-    live: "#",
+    github: "https://github.com/13bad37/Portfolio",
     features: [
       "Custom cursor with context-aware animations",
       "Particle system background with interactive elements",
@@ -68,17 +69,18 @@ const projects: Project[] = [
   },
   {
     id: 4,
-    title: "Student Management System",
-    description: "A comprehensive system for managing student records, courses, and academic performance.",
-    image: "https://images.pexels.com/photos/256381/pexels-photo-256381.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    title: "Hospital Management System",
+    description: "A comprehensive hospital management system built with C# for managing patient records, appointments, and medical staff operations.",
+    image: "https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     category: "Backend Development",
-    technologies: ["C#", ".NET Core", "SQL Server", "Bootstrap"],
-    github: "https://github.com/13bad37",
+    technologies: ["C#", ".NET Framework", "SQL Server", "Windows Forms"],
+    github: "https://github.com/13bad37/Hospital-Management-System",
     features: [
-      "User authentication and role-based access control",
-      "Student record management with search and filter",
-      "Course registration and grade tracking",
-      "Reporting and analytics dashboard"
+      "Patient registration and medical history management",
+      "Appointment scheduling and doctor assignment",
+      "Medical staff and department management",
+      "Prescription and treatment tracking",
+      "Billing and payment processing system"
     ]
   }
 ];
@@ -93,9 +95,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       ref={ref}
       className="group rounded-xl overflow-hidden bg-dark-600 border border-dark-400 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform smooth-hover"
       whileHover={{ 
-        y: -12, 
-        scale: 1.02,
-        boxShadow: '0 25px 50px -12px rgba(139, 92, 246, 0.25)'
+        y: -15, 
+        scale: 1.03,
+        boxShadow: '0 30px 60px -12px rgba(139, 92, 246, 0.4)',
+        rotateY: 2,
+        rotateX: 2
       }}
       whileTap={{ y: -6, scale: 1.01 }}
       onClick={onClick}
@@ -309,7 +313,6 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
 const Projects: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentCategory, setCurrentCategory] = useState<string | null>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
 
   const categories = ['All', ...new Set(projects.map(p => p.category))];
   
@@ -319,20 +322,11 @@ const Projects: React.FC = () => {
 
   const titleAnimation = fadeIn('up');
 
-  const scrollLeft = () => {
-    if (projectsRef.current) {
-      projectsRef.current.scrollBy({ left: -300, behavior: 'smooth' });
-    }
-  };
-
-  const scrollRight = () => {
-    if (projectsRef.current) {
-      projectsRef.current.scrollBy({ left: 300, behavior: 'smooth' });
-    }
-  };
-
   return (
     <section id="projects" className="py-20 relative" role="region" aria-labelledby="projects-heading">
+      <FloatingElements variant="geometric" density="light" />
+      <EnhancedFloatingElements variant="network-nodes" density="medium" />
+      <EnhancedFloatingElements variant="particle-field" density="light" />
       <div className="absolute inset-0 bg-gradient-conic from-dark-600 via-dark-500 to-dark-600 opacity-50" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
@@ -348,36 +342,18 @@ const Projects: React.FC = () => {
           </p>
         </motion.div>
 
-        <div className="relative mb-10" role="navigation" aria-label="Project category filters">
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
-            <motion.button 
-              onClick={scrollLeft}
-              className="p-2 bg-dark-500 rounded-full text-white shadow-lg hover:bg-primary-500 transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              aria-label="Scroll left"
-            >
-              <ChevronLeft size={24} />
-            </motion.button>
-          </div>
-          
-          <div 
-            ref={projectsRef}
-            className="flex space-x-4 overflow-x-auto py-4 px-8 scrollbar-hide"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            role="tablist"
-            aria-label="Project categories"
-          >
+        <div className="mb-10" role="navigation" aria-label="Project category filters">
+          <div className="flex flex-wrap justify-center gap-3 px-4">
             {categories.map((category) => (
               <motion.button
                 key={category}
-                className={`px-5 py-2 rounded-full text-sm font-medium whitespace-nowrap ${
+                className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
                   currentCategory === category || (category === 'All' && !currentCategory)
-                    ? 'bg-primary-500 text-white' 
-                    : 'bg-dark-600 text-gray-300 hover:bg-dark-500'
-                } transition-colors`}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
+                    ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' 
+                    : 'bg-dark-600 text-gray-300 hover:bg-dark-500 hover:text-white border border-dark-500'
+                }`}
+                whileHover={{ y: -3, scale: 1.05 }}
+                whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => setCurrentCategory(category === 'All' ? null : category)}
                 role="tab"
                 aria-selected={currentCategory === category || (category === 'All' && !currentCategory)}
@@ -387,22 +363,10 @@ const Projects: React.FC = () => {
               </motion.button>
             ))}
           </div>
-          
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
-            <motion.button 
-              onClick={scrollRight}
-              className="p-2 bg-dark-500 rounded-full text-white shadow-lg hover:bg-primary-500 transition-colors"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              aria-label="Scroll right"
-            >
-              <ChevronRight size={24} />
-            </motion.button>
-          </div>
         </div>
 
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8"
           layout
           id="projects-grid"
           role="tabpanel"
@@ -450,6 +414,8 @@ const Projects: React.FC = () => {
           </motion.a>
         </motion.div>
       </div>
+      
+      <AnimatedDivider type="dots" />
     </section>
   );
 };

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Server, Database, Settings, Code, Puzzle } from 'lucide-react';
 import { fadeIn, staggerChildren, staggerItem } from '../../hooks/useAnimation';
+import FloatingElements from '../animations/FloatingElements';
+import AnimatedDivider from '../ui/AnimatedDivider';
 
 interface Skill {
   name: string;
@@ -121,6 +123,7 @@ const Skills: React.FC = () => {
 
   return (
     <section id="skills" className="py-20 relative" role="region" aria-labelledby="skills-heading">
+      <FloatingElements variant="code" density="medium" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-500 to-dark-500 opacity-60" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
@@ -232,6 +235,8 @@ const Skills: React.FC = () => {
           </div>
         </motion.div>
       </div>
+      
+      <AnimatedDivider type="tech" />
     </section>
   );
 };

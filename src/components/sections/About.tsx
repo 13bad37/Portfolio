@@ -2,6 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Brain, Rocket, Zap, LightbulbIcon } from 'lucide-react';
 import { fadeIn } from '../../hooks/useAnimation';
+import FloatingElements from '../animations/FloatingElements';
+import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
+import AnimatedDivider from '../ui/AnimatedDivider';
 
 const About: React.FC = () => {
   const sectionRef = useRef<HTMLElement>(null);
@@ -52,6 +55,9 @@ const About: React.FC = () => {
 
   return (
     <section ref={sectionRef} id="about" className="py-20 relative overflow-hidden" role="region" aria-labelledby="about-heading">
+      <FloatingElements variant="tech" density="light" />
+      <EnhancedFloatingElements variant="data-streams" density="light" />
+      
       <motion.div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{ y, opacity }}
@@ -74,10 +80,10 @@ const About: React.FC = () => {
           <p className="max-w-2xl text-gray-300">Get to know more about me, my background, and what I do.</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <motion.div 
             ref={parallaxRef}
-            className="relative h-[400px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300"
+            className="relative h-[300px] lg:h-[420px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1"
             {...imageAnimation}
             role="img"
             aria-label="Interactive visual representation of fast learning and problem solving"
@@ -86,15 +92,20 @@ const About: React.FC = () => {
             <div className="parallax-element absolute inset-0 flex flex-col justify-center items-center text-center px-8 z-20" data-depth="2">
               <motion.div
                 animate={{ 
-                  scale: [1, 1.05, 1],
-                  rotate: [0, 2, -2, 0] 
+                  scale: [1, 1.1, 1],
+                  rotate: [0, 5, -5, 0],
+                  boxShadow: [
+                    '0 0 20px rgba(139, 92, 246, 0.2)',
+                    '0 0 40px rgba(139, 92, 246, 0.4)',
+                    '0 0 20px rgba(139, 92, 246, 0.2)'
+                  ]
                 }}
                 transition={{ 
-                  duration: 8, 
+                  duration: 6, 
                   repeat: Infinity,
                   ease: "easeInOut" 
                 }}
-                className="p-5 rounded-full bg-dark-500/50 backdrop-blur-sm mb-8 border border-primary-500/30"
+                className="p-6 rounded-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20 backdrop-blur-sm mb-8 border border-primary-500/40"
                 aria-hidden="true"
               >
                 <Brain className="h-16 w-16 text-primary-400" />
@@ -107,7 +118,7 @@ const About: React.FC = () => {
             <div className="parallax-element absolute top-1/2 right-10 w-12 h-12 rounded-lg bg-accent-500/15 backdrop-blur-sm z-0" data-depth="6"></div>
           </motion.div>
 
-          <motion.article {...textAnimation} role="article" aria-labelledby="about-content-heading">
+          <motion.article {...textAnimation} role="article" aria-labelledby="about-content-heading" className="order-1 lg:order-2">
             <h3 id="about-content-heading" className="text-2xl font-bold mb-6">Transforming Ideas into Digital Realities</h3>
             
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -174,6 +185,8 @@ const About: React.FC = () => {
           </motion.article>
         </div>
       </div>
+      
+      <AnimatedDivider type="gradient" />
     </section>
   );
 };

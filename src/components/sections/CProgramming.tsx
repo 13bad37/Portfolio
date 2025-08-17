@@ -170,7 +170,7 @@ const CProgramming: React.FC = () => {
       <div className="container-responsive relative z-10">
         <motion.div ref={titleRef as React.RefObject<HTMLDivElement>} animate={titleAnim} className="flex flex-col items-center mb-16 text-center">
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">Programming Expertise</span>
-          <h2 className="heading-responsive font-bold mb-4">C Programming Language</h2>
+          <h2 className="heading-responsive font-bold mb-4">C Programming</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6" />
           <p className="max-w-3xl text-gray-300 text-responsive">
             Deep understanding of low-level programming concepts including memory management, 
@@ -281,7 +281,7 @@ const CProgramming: React.FC = () => {
 
             {/* Additional Information */}
             <div className="mt-6 bg-dark-700 rounded-xl border border-dark-500 p-6">
-              <h3 className="text-lg font-semibold text-white mb-4">Why C Programming?</h3>
+              <h3 className="text-lg font-semibold text-white mb-4">Why C?</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
                 <div>
                   <h4 className="font-semibold text-primary-400 mb-2">Performance</h4>

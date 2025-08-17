@@ -9,8 +9,22 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 80px; /* Account for fixed header */
   -webkit-overflow-scrolling: touch; /* iOS momentum scrolling */
   overflow-x: hidden;
+}
+
+/* Enhanced smooth scrolling for better transitions */
+@supports (scroll-behavior: smooth) {
+  html {
+    scroll-behavior: smooth;
+    scroll-snap-type: y proximity;
+  }
+  
+  section {
+    scroll-snap-align: start;
+    scroll-snap-stop: normal;
+  }
 }
 
 body {
@@ -105,6 +119,32 @@ body {
   .smooth-hover:hover {
     transform: none;
   }
+
+  /* Optimize for mobile performance */
+  .mobile-optimized {
+    will-change: auto;
+    transform: none;
+    animation: none;
+  }
+}
+
+/* High refresh rate display optimizations */
+@media (min-resolution: 120dpi) {
+  .high-refresh {
+    animation-timing-function: linear;
+    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+}
+
+/* Content visibility optimizations for better painting performance */
+.content-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 500px;
+}
+
+/* Critical resource hints for performance */
+.preload-hint {
+  content-visibility: auto;
 }
 
 /* Reduced motion preferences */
