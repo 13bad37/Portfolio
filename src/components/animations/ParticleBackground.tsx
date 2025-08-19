@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { useMousePosition } from '../../hooks/useMousePosition';
 import { useThrottledScroll } from '../../hooks/useThrottledScroll';
 
 interface Particle {
@@ -13,7 +12,6 @@ interface Particle {
   life: number;
   maxLife: number;
   angle: number;
-  trail: { x: number; y: number; opacity: number }[];
 }
 
 interface FloatingShape {
@@ -30,23 +28,22 @@ interface FloatingShape {
 
 const ParticleBackground: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mousePosition = useMousePosition();
   const { scrollY } = useThrottledScroll(16);
   const particlesArrayRef = useRef<Particle[]>([]);
   const shapesArrayRef = useRef<FloatingShape[]>([]);
   const animationIdRef = useRef<number>();
-  const [maxParticles, setMaxParticles] = useState(window.innerWidth < 768 ? 60 : 100);
+  const [maxParticles, setMaxParticles] = useState(window.innerWidth < 768 ? 20 : 40);
   const [performanceMode, setPerformanceMode] = useState(false);
 
   useEffect(() => {
     // Performance event listeners
     const handleReduceParticles = () => {
-      setMaxParticles(window.innerWidth < 768 ? 30 : 50);
+      setMaxParticles(window.innerWidth < 768 ? 10 : 20);
       setPerformanceMode(true);
     };
 
     const handleRestoreQuality = () => {
-      setMaxParticles(window.innerWidth < 768 ? 60 : 100);
+      setMaxParticles(window.innerWidth < 768 ? 20 : 40);
       setPerformanceMode(false);
     };
 
@@ -93,8 +90,7 @@ const ParticleBackground: React.FC = () => {
         opacity,
         life: maxLife,
         maxLife,
-        angle: Math.random() * Math.PI * 2,
-        trail: []
+        angle: Math.random() * Math.PI * 2
       });
 
       if (particlesArrayRef.current.length > maxParticles) {
@@ -168,16 +164,11 @@ const ParticleBackground: React.FC = () => {
       ctx.restore();
     };
 
-    // Enhanced particle drawing with trails and effects
+    // Simplified particle drawing for better performance
     const drawParticles = () => {
-      // Create subtle background gradient
-      const gradient = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, Math.max(canvas.width, canvas.height));
-      gradient.addColorStop(0, 'rgba(15, 23, 42, 0.02)');
-      gradient.addColorStop(1, 'rgba(15, 23, 42, 0.08)');
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw floating shapes
+      // Draw simplified floating shapes
       shapesArrayRef.current.forEach((shape) => {
         drawShape(ctx, shape);
         
@@ -193,58 +184,25 @@ const ParticleBackground: React.FC = () => {
         if (shape.y > canvas.height + 50) shape.y = -50;
       });
 
-      // Draw particles with enhanced effects
+      // Draw particles with minimal effects
       particlesArrayRef.current.forEach((particle, index) => {
-        // Update trail
-        particle.trail.unshift({ x: particle.x, y: particle.y, opacity: particle.opacity });
-        if (particle.trail.length > 8) particle.trail.pop();
-
-        // Draw trail
-        particle.trail.forEach((point, trailIndex) => {
-          const trailOpacity = point.opacity * (1 - trailIndex / particle.trail.length) * 0.5;
-          const trailSize = particle.size * (1 - trailIndex / particle.trail.length);
-          
-          ctx.fillStyle = `hsla(${particle.hue}, 70%, 60%, ${trailOpacity})`;
-          ctx.beginPath();
-          ctx.arc(point.x, point.y, trailSize * 0.5, 0, Math.PI * 2);
-          ctx.fill();
-        });
-
-        // Draw main particle with glow effect
-        const glowGradient = ctx.createRadialGradient(particle.x, particle.y, 0, particle.x, particle.y, particle.size * 3);
-        glowGradient.addColorStop(0, `hsla(${particle.hue}, 100%, 70%, ${particle.opacity})`);
-        glowGradient.addColorStop(0.5, `hsla(${particle.hue}, 100%, 50%, ${particle.opacity * 0.3})`);
-        glowGradient.addColorStop(1, `hsla(${particle.hue}, 100%, 30%, 0)`);
-        
-        ctx.fillStyle = glowGradient;
-        ctx.beginPath();
-        ctx.arc(particle.x, particle.y, particle.size * 3, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core particle
-        ctx.fillStyle = `hsla(${particle.hue}, 100%, 80%, ${particle.opacity})`;
+        // Simple particle rendering
+        ctx.fillStyle = `hsla(${particle.hue}, 70%, 60%, ${particle.opacity * 0.8})`;
         ctx.beginPath();
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Enhanced connection lines with mouse interaction
-        const mouseDistance = Math.sqrt((particle.x - mousePosition.x) ** 2 + (particle.y - mousePosition.y) ** 2);
-        const mouseInfluence = Math.max(0, 1 - mouseDistance / 200);
-        
+        // Simplified connection lines (no mouse interaction)
         for (let j = index + 1; j < particlesArrayRef.current.length; j++) {
           const other = particlesArrayRef.current[j];
           const dx = particle.x - other.x;
           const dy = particle.y - other.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
 
-          if (distance < 120) {
-            const connectionOpacity = (1 - distance / 120) * 0.15 * Math.min(particle.opacity, other.opacity);
-            const lineGradient = ctx.createLinearGradient(particle.x, particle.y, other.x, other.y);
-            lineGradient.addColorStop(0, `hsla(${particle.hue}, 70%, 60%, ${connectionOpacity * (1 + mouseInfluence)})`);
-            lineGradient.addColorStop(1, `hsla(${other.hue}, 70%, 60%, ${connectionOpacity * (1 + mouseInfluence)})`);
-            
-            ctx.strokeStyle = lineGradient;
-            ctx.lineWidth = 0.5 + mouseInfluence;
+          if (distance < 80) {
+            const connectionOpacity = (1 - distance / 80) * 0.1 * Math.min(particle.opacity, other.opacity);
+            ctx.strokeStyle = `hsla(${particle.hue}, 60%, 50%, ${connectionOpacity})`;
+            ctx.lineWidth = 0.5;
             ctx.beginPath();
             ctx.moveTo(particle.x, particle.y);
             ctx.lineTo(other.x, other.y);
@@ -252,17 +210,15 @@ const ParticleBackground: React.FC = () => {
           }
         }
 
-        // Update particle with wave motion
-        particle.angle += 0.02;
-        particle.x += particle.speedX + Math.sin(particle.angle) * 0.5;
-        particle.y += particle.speedY + Math.cos(particle.angle) * 0.3;
+        // Update particle with simple motion
+        particle.x += particle.speedX;
+        particle.y += particle.speedY;
 
-        // Advanced boundary behavior
-        const padding = 50;
-        if (particle.x < -padding) particle.x = canvas.width + padding;
-        if (particle.x > canvas.width + padding) particle.x = -padding;
-        if (particle.y < -padding) particle.y = canvas.height + padding;
-        if (particle.y > canvas.height + padding) particle.y = -padding;
+        // Simple boundary behavior
+        if (particle.x < 0) particle.x = canvas.width;
+        if (particle.x > canvas.width) particle.x = 0;
+        if (particle.y < 0) particle.y = canvas.height;
+        if (particle.y > canvas.height) particle.y = 0;
 
         // Life management
         particle.life--;
@@ -285,7 +241,7 @@ const ParticleBackground: React.FC = () => {
       }
       
       // Create ambient particles (reduced in performance mode)
-      const particleThreshold = performanceMode ? 0.92 : 0.85;
+      const particleThreshold = performanceMode ? 0.98 : 0.95;
       if (Math.random() > particleThreshold) {
         createParticle(
           Math.random() * canvas.width,
@@ -298,38 +254,26 @@ const ParticleBackground: React.FC = () => {
 
     animationIdRef.current = requestAnimationFrame(animate);
 
-    // Enhanced mouse interaction
-    const mouseMoveHandler = (e: MouseEvent) => {
-      for (let i = 0; i < 3; i++) {
-        createParticle(
-          e.clientX + (Math.random() - 0.5) * 50,
-          e.clientY + (Math.random() - 0.5) * 50,
-          true
-        );
-      }
-    };
-    
-    window.addEventListener('mousemove', mouseMoveHandler);
+    // Removed heavy mouse interaction for better performance
 
-    // Initial setup
-    for (let i = 0; i < 40; i++) {
+    // Initial setup - reduced particle count
+    for (let i = 0; i < 15; i++) {
       createParticle(Math.random() * canvas.width, Math.random() * canvas.height);
     }
     
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 3; i++) {
       createFloatingShape();
     }
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', mouseMoveHandler);
       window.removeEventListener('performance:reduce-particles', handleReduceParticles);
       window.removeEventListener('performance:restore-quality', handleRestoreQuality);
       if (animationIdRef.current) {
         cancelAnimationFrame(animationIdRef.current);
       }
     };
-  }, [mousePosition, scrollY, maxParticles, performanceMode]);
+  }, [scrollY, maxParticles, performanceMode]);
 
   return (
     <canvas

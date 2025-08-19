@@ -104,15 +104,19 @@ body {
   }
 }
 
+/* Apple-style modal scroll prevention */
+.modal-open {
+  position: fixed;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
 /* Enhanced mobile touch interactions */
 @media (max-width: 768px) {
   .touch-target {
     min-height: 44px;
     min-width: 44px;
-  }
-  
-  .mobile-padding {
-    @apply px-4 py-6;
   }
 
   /* Disable hover effects on touch devices */
@@ -126,13 +130,14 @@ body {
     transform: none;
     animation: none;
   }
-}
-
-/* High refresh rate display optimizations */
-@media (min-resolution: 120dpi) {
-  .high-refresh {
-    animation-timing-function: linear;
-    transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  
+  /* Ensure modal works perfectly on mobile */
+  .modal-open {
+    position: fixed;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -142,9 +147,49 @@ body {
   contain-intrinsic-size: 500px;
 }
 
-/* Critical resource hints for performance */
-.preload-hint {
-  content-visibility: auto;
+/* Optimized animations for Hero component */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.1); }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50% { transform: translateX(-50%) translateY(10px); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow infinite ease-in-out;
+}
+
+.animate-bounce-gentle {
+  animation: bounce-gentle 2s infinite ease-in-out;
 }
 
 /* Reduced motion preferences */

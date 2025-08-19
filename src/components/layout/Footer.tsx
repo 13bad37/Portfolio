@@ -86,7 +86,7 @@ const Footer: React.FC = () => {
           <nav role="navigation" aria-labelledby="footer-nav-heading">
             <h3 id="footer-nav-heading" className="text-lg font-semibold text-white mb-4 border-b border-gray-700 pb-2">Quick Links</h3>
             <ul className="space-y-2" role="list">
-              {['Home', 'About', 'Skills', 'Projects', 'Showcase', 'Programming Expertise', 'Contact'].map((item) => (
+              {['Home', 'About', 'Skills', 'Projects', 'Programming Expertise', 'Contact'].map((item) => (
                 <li key={item} role="listitem">
                   <motion.a
                     href={`#${item.toLowerCase().replace(' ', '-')}`}

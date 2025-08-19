@@ -12,10 +12,10 @@ const EnhancedFloatingElements: React.FC<EnhancedFloatingElementsProps> = ({
 }) => {
   const getElementCount = () => {
     switch (density) {
-      case 'light': return 4;
-      case 'medium': return 8;
-      case 'dense': return 12;
-      default: return 4;
+      case 'light': return 2;
+      case 'medium': return 4;
+      case 'dense': return 6;
+      default: return 2;
     }
   };
 

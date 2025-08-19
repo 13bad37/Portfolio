@@ -1,242 +1,53 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef, memo } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowDown, Code, GitBranch, Terminal } from 'lucide-react';
-import gsap from 'gsap';
-import { useParallax } from '../../hooks/useParallax';
-import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
+import { ArrowDown } from 'lucide-react';
 
-const Hero: React.FC = () => {
+const Hero: React.FC = memo(() => {
   const textRef = useRef<HTMLHeadingElement>(null);
-  const { ref: parallaxRef, transform } = useParallax({ speed: 0.3 });
-
-  useEffect(() => {
-    if (!textRef.current) return;
-
-    const textElement = textRef.current;
-    
-    gsap.fromTo(
-      textElement.querySelectorAll('.gradient-text'),
-      { 
-        backgroundPosition: '0% 50%',
-      },
-      { 
-        backgroundPosition: '100% 50%', 
-        duration: 5, 
-        repeat: -1, 
-        yoyo: true,
-        ease: "sine.inOut" 
-      }
-    );
-
-    // Clean up GSAP animation
-    return () => {
-      gsap.killTweensOf(textElement.querySelectorAll('.gradient-text'));
-    };
-  }, []);
   
   return (
     <section 
-      ref={parallaxRef}
       id="home" 
-      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 parallax" 
-      style={{ transform }}
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" 
       role="region" 
       aria-labelledby="hero-heading"
     >
-      {/* Enhanced floating elements animation */}
-      <EnhancedFloatingElements variant="digital-rain" density="light" />
-      <div className="absolute inset-0 pointer-events-none transform-gpu overflow-hidden">
+      {/* Subtle background elements with Apple-style sophistication */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Minimal floating orbs with subtle animation */}
         <motion.div
-          className="absolute top-1/4 left-1/4 text-primary-500/20"
-          animate={{ 
-            y: [0, -30, 0], 
-            rotate: [0, 5, 0],
-            scale: [1, 1.05, 1]
-          }}
-          transition={{ 
-            duration: 6, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        >
-          <Code size={80} />
-        </motion.div>
-        
-        <motion.div
-          className="absolute bottom-1/4 right-1/4 text-secondary-500/20"
-          animate={{ 
-            y: [0, 40, 0], 
-            rotate: [0, -10, 0],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            duration: 8, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        >
-          <Terminal size={100} />
-        </motion.div>
-        
-        <motion.div
-          className="absolute top-1/3 right-1/3 text-accent-500/20"
-          animate={{ 
-            y: [0, 20, 0], 
-            x: [0, -20, 0], 
-            rotate: [0, 15, 0],
-            scale: [1, 0.9, 1]
-          }}
-          transition={{ 
-            duration: 7, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        >
-          <GitBranch size={60} />
-        </motion.div>
-
-        {/* Floating code blocks - mobile-safe positioning */}
-        <motion.div
-          className="absolute top-16 right-4 md:right-16 bg-dark-700/30 backdrop-blur-sm border border-primary-500/20 rounded-lg p-3 font-mono text-xs text-primary-300 hidden sm:block"
-          animate={{ 
-            y: [0, -15, 0], 
-            x: [0, 10, 0],
-            rotate: [0, 2, 0]
-          }}
-          transition={{ 
-            duration: 5, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <div className="w-2 h-2 rounded-full bg-red-500"></div>
-            <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-          </div>
-          <div className="leading-relaxed">
-            <span className="text-blue-400">function</span> <span className="text-yellow-400">createMagic</span>() {"{"}
-            <br />
-            <span className="ml-2 text-gray-400">return</span> <span className="text-green-400">"✨"</span>;
-            <br />
-            {"}"}
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="absolute bottom-1/3 right-4 md:right-12 bg-dark-700/40 backdrop-blur-sm border border-secondary-500/30 rounded-lg px-3 py-2 font-mono text-xs text-secondary-300 hidden sm:block"
-          animate={{ 
-            y: [0, 15, 0], 
-            x: [0, -8, 0],
-            rotate: [0, -1, 0]
-          }}
-          transition={{ 
-            duration: 6, 
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1.5
-          }}
-          aria-hidden="true"
-        >
-          <div className="leading-tight">
-            <span className="text-purple-400">const</span> <span className="text-yellow-400">skills</span> = [
-            <br />
-            <span className="ml-2 text-green-400">"C"</span>, <span className="text-green-400">"JS"</span>, <span className="text-green-400">"TS"</span>, <span className="text-green-400">"Java"</span>,
-            <br />
-            <span className="ml-2 text-green-400">"Python"</span>, <span className="text-green-400">"C#"</span>, <span className="text-green-400">"React"</span>
-            <br />
-            ];
-          </div>
-        </motion.div>
-
-        {/* Animated geometric shapes */}
-        <motion.div
-          className="absolute top-1/2 left-8 w-16 h-16 border-2 border-primary-500/30 rounded-lg"
-          animate={{ 
-            rotate: [0, 360],
-            scale: [1, 1.1, 1]
-          }}
-          transition={{ 
-            duration: 10, 
-            repeat: Infinity,
-            ease: "linear" 
-          }}
-          aria-hidden="true"
-        />
-
-        <motion.div
-          className="absolute bottom-1/3 right-8 w-12 h-12 border-2 border-secondary-500/30 rounded-full"
-          animate={{ 
-            rotate: [0, -360],
-            y: [0, -20, 0]
-          }}
-          transition={{ 
-            duration: 8, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        />
-
-        {/* Sophisticated gradient orb with subtle pulse */}
-        <motion.div
-          className="absolute top-1/5 right-1/5 w-20 h-20 rounded-full"
+          className="absolute top-1/5 right-1/5 w-24 h-24 rounded-full opacity-30"
           style={{
-            background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.2), rgba(59, 130, 246, 0.1), transparent 70%)',
-            filter: 'blur(12px)'
+            background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.1), transparent 70%)',
+            filter: 'blur(20px)'
+          }}
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.1, 0.3, 0.1]
+          }}
+          transition={{ 
+            duration: 8, 
+            repeat: Infinity,
+            ease: "easeInOut" 
+          }}
+          aria-hidden="true"
+        />
+        
+        <motion.div
+          className="absolute bottom-1/4 left-1/5 w-16 h-16 rounded-full opacity-20"
+          style={{
+            background: 'radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.08), transparent 60%)',
+            filter: 'blur(15px)'
           }}
           animate={{ 
             scale: [1, 1.2, 1],
-            opacity: [0.3, 0.8, 0.3],
-            rotate: [0, 180, 360]
+            opacity: [0.1, 0.2, 0.1]
           }}
           transition={{ 
-            duration: 10, 
-            repeat: Infinity,
-            ease: "easeInOut" 
-          }}
-          aria-hidden="true"
-        />
-        
-        {/* Additional floating orbs */}
-        <motion.div
-          className="absolute bottom-1/4 left-1/5 w-12 h-12 rounded-full"
-          style={{
-            background: 'radial-gradient(circle at 40% 40%, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.08), transparent 60%)',
-            filter: 'blur(6px)'
-          }}
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.4, 0.7, 0.4],
-            x: [0, 20, 0],
-            y: [0, -15, 0]
-          }}
-          transition={{ 
-            duration: 6, 
+            duration: 12, 
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 2
-          }}
-          aria-hidden="true"
-        />
-        
-        {/* Subtle ring effect */}
-        <motion.div
-          className="absolute top-1/5 right-1/5 w-12 h-12 border border-primary-500/20 rounded-full"
-          style={{ left: '0.125rem', top: '0.125rem' }}
-          animate={{ 
-            scale: [1, 1.1, 1],
-            opacity: [0.2, 0.4, 0.2]
-          }}
-          transition={{ 
-            duration: 6, 
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1
+            delay: 3
           }}
           aria-hidden="true"
         />
@@ -263,7 +74,7 @@ const Hero: React.FC = () => {
           >
             <span className="block">Bridging ideas with</span>
             <span 
-              className="gradient-text inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary-500 via-accent-500 to-secondary-500 bg-300% font-mono"
+              className="inline-block text-transparent bg-clip-text bg-gradient-to-r from-primary-500 via-accent-500 to-secondary-500 font-mono"
             >
               elegant code
             </span>
@@ -318,7 +129,8 @@ const Hero: React.FC = () => {
       </div>
       
       <motion.div 
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-white/60 z-20"
+        className="absolute bottom-8 left-1/2 flex flex-col items-center text-white/60 z-20"
+        style={{ transform: 'translateX(-50%)' }}
         animate={{ y: [0, 10, 0] }}
         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         aria-hidden="true"
@@ -341,6 +153,8 @@ const Hero: React.FC = () => {
       </motion.div>
     </section>
   );
-};
+});
+
+Hero.displayName = 'Hero';
 
 export default Hero;

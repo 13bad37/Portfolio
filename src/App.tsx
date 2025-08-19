@@ -1,38 +1,38 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, lazy, Suspense } from 'react';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
-import Hero from './components/sections/Hero';
-import About from './components/sections/About';
-import Skills from './components/sections/Skills';
-import Projects from './components/sections/Projects';
-import Contact from './components/sections/Contact';
-import Showcase from './components/sections/Showcase';
-import ProgrammingExpertise from './components/sections/ProgrammingExpertise';
-import ParticleBackground from './components/animations/ParticleBackground';
-import CustomCursor from './components/animations/CustomCursor';
-import ScrollProgress from './components/animations/ScrollProgress';
+import HeroOptimized from './components/sections/HeroOptimized';
 import Loader from './components/animations/Loader';
 import { getPerformanceManager } from './utils/performanceManager';
+
+// Lazy load heavy components
+const About = lazy(() => import('./components/sections/About'));
+const Skills = lazy(() => import('./components/sections/Skills'));
+const Projects = lazy(() => import('./components/sections/Projects'));
+const Contact = lazy(() => import('./components/sections/Contact'));
+const ProgrammingExpertise = lazy(() => import('./components/sections/ProgrammingExpertise'));
+const OptimizedBackground = lazy(() => import('./components/animations/OptimizedBackground'));
+const ScrollProgress = lazy(() => import('./components/animations/ScrollProgress'));
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize performance manager for optimal 120fps performance
+    // Initialize performance manager for optimal performance
     const performanceManager = getPerformanceManager({
-      targetFPS: 120,
+      targetFPS: 60, // Reduced from 120 for better performance
       adaptiveQuality: true,
       optimizeForMobile: true
     });
 
-    // Simulate loading time
+    // Reduced loading time for faster initial render
     const timer = setTimeout(() => {
       setLoading(false);
       // Optimize memory after initial load
       setTimeout(() => {
         performanceManager.optimizeMemory();
-      }, 1000);
-    }, 2000);
+      }, 500);
+    }, 800); // Reduced from 2000ms to 800ms
 
     return () => clearTimeout(timer);
   }, []);
@@ -43,18 +43,20 @@ const App: React.FC = () => {
         <Loader />
       ) : (
         <>
-          <CustomCursor />
-          <ParticleBackground />
-          <ScrollProgress />
+          <Suspense fallback={null}>
+            <OptimizedBackground />
+            <ScrollProgress />
+          </Suspense>
           <Header role="banner" />
           <main className="relative z-10" role="main" aria-label="Main content">
-            <Hero />
-            <About />
-            <Skills />
-            <Projects />
-            <Showcase />
-            <ProgrammingExpertise />
-            <Contact />
+            <HeroOptimized />
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div></div>}>
+              <About />
+              <Skills />
+              <Projects />
+              <ProgrammingExpertise />
+              <Contact />
+            </Suspense>
           </main>
           <Footer role="contentinfo" />
         </>

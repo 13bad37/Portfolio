@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code, ExternalLink, Github, X, ChevronRight } from 'lucide-react';
 import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
-import FloatingElements from '../animations/FloatingElements';
-import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
 import AnimatedDivider from '../ui/AnimatedDivider';
+import { modalScrollManager } from '../../utils/modalScrollLock';
 
 interface Project {
   id: number;
@@ -26,7 +25,7 @@ const projects: Project[] = [
     id: 1,
     title: "Movie Application",
     description: "A comprehensive movie browsing and discovery application with advanced search and filtering capabilities.",
-    image: "https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
     category: "Web Development",
     technologies: ["React", "JavaScript", "CSS3", "HTML5", "API Integration"],
     github: "https://github.com/13bad37/Movie-Application",
@@ -41,7 +40,7 @@ const projects: Project[] = [
     id: 2,
     title: "Server Express Application",
     description: "A robust server-side application built with Express.js featuring RESTful APIs and database integration.",
-    image: "https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
     category: "Backend Development",
     technologies: ["Node.js", "Express.js", "MongoDB", "RESTful APIs"],
     github: "https://github.com/13bad37/Server-Side-Express-Application",
@@ -56,22 +55,22 @@ const projects: Project[] = [
     id: 3,
     title: "Personal Portfolio",
     description: "This sophisticated portfolio website you're currently viewing, featuring advanced animations and interactive elements.",
-    image: "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
     category: "Web Development",
-    technologies: ["React", "TypeScript", "Framer Motion", "Tailwind CSS"],
+    technologies: ["React", "TypeScript", "CSS Animations", "Tailwind CSS"],
     github: "https://github.com/13bad37/Portfolio",
     features: [
-      "Custom cursor with context-aware animations",
-      "Particle system background with interactive elements",
+      "Optimized performance with CSS-only animations",
+      "Advanced scroll management and user experience",
       "Responsive design with tailored mobile experience",
-      "Smooth page transitions and micro-interactions"
+      "Sophisticated Apple-style interface design"
     ]
   },
   {
     id: 4,
     title: "Hospital Management System",
     description: "A comprehensive hospital management system built with C# for managing patient records, appointments, and medical staff operations.",
-    image: "https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
+    image: "https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
     category: "Backend Development",
     technologies: ["C#", ".NET Framework", "SQL Server", "Windows Forms"],
     github: "https://github.com/13bad37/Hospital-Management-System",
@@ -95,13 +94,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       ref={ref}
       className="group rounded-xl overflow-hidden bg-dark-600 border border-dark-400 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform smooth-hover"
       whileHover={{ 
-        y: -15, 
-        scale: 1.03,
-        boxShadow: '0 30px 60px -12px rgba(139, 92, 246, 0.4)',
-        rotateY: 2,
-        rotateX: 2
+        y: -8, 
+        scale: 1.02,
+        boxShadow: '0 20px 40px -12px rgba(139, 92, 246, 0.2)'
       }}
-      whileTap={{ y: -6, scale: 1.01 }}
+      whileTap={{ y: -2, scale: 1.01 }}
       onClick={onClick}
       {...hoverProps}
       {...cardAnimation}
@@ -119,7 +116,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
         <LazyImage 
           src={project.image}
           alt={project.title}
-          className="w-full h-full transition-transform duration-700 group-hover:scale-125 transform-gpu"
+          className="w-full h-full transition-transform duration-500 group-hover:scale-110 transform-gpu"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-dark-500 via-dark-500/20 to-transparent transition-opacity duration-300 group-hover:opacity-75" aria-hidden="true"></div>
         
@@ -195,12 +192,33 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 };
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
+  // Apple-style escape key handling
+  React.useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    
+    document.addEventListener('keydown', handleEscape);
+    
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [onClose]);
+
   return (
     <motion.div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-500/90 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      style={{ 
+        backgroundColor: 'rgba(15, 23, 42, 0.95)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)' 
+      }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -208,12 +226,21 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       aria-describedby="project-detail-description"
     >
       <motion.div 
-        className="bg-dark-600 rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] overflow-y-auto"
-        initial={{ scale: 0.9, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.9, opacity: 0 }}
-        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl"
+        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        transition={{ 
+          type: "spring", 
+          damping: 30, 
+          stiffness: 400,
+          duration: 0.3
+        }}
         onClick={(e) => e.stopPropagation()}
+        style={{
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#8b5cf6 transparent'
+        }}
       >
         <div className="relative h-64 sm:h-80 overflow-hidden">
           <img 
@@ -312,22 +339,33 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
 
 const Projects: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
-  const [currentCategory, setCurrentCategory] = useState<string | null>(null);
+  const [currentCategory, setCurrentCategory] = useState<string>('All');
+
+  // Apple-style modal scroll management
+  useEffect(() => {
+    if (selectedProject) {
+      modalScrollManager.lock();
+    } else {
+      modalScrollManager.unlock();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      modalScrollManager.unlock();
+    };
+  }, [selectedProject]);
 
   const categories = ['All', ...new Set(projects.map(p => p.category))];
   
-  const filteredProjects = currentCategory && currentCategory !== 'All'
-    ? projects.filter(p => p.category === currentCategory)
-    : projects;
+  const filteredProjects = currentCategory === 'All'
+    ? projects
+    : projects.filter(p => p.category === currentCategory);
 
   const titleAnimation = fadeIn('up');
 
   return (
     <section id="projects" className="py-20 relative" role="region" aria-labelledby="projects-heading">
-      <FloatingElements variant="geometric" density="light" />
-      <EnhancedFloatingElements variant="network-nodes" density="medium" />
-      <EnhancedFloatingElements variant="particle-field" density="light" />
-      <div className="absolute inset-0 bg-gradient-conic from-dark-600 via-dark-500 to-dark-600 opacity-50" aria-hidden="true"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-dark-600/20 via-dark-500/10 to-dark-600/20" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
@@ -348,15 +386,15 @@ const Projects: React.FC = () => {
               <motion.button
                 key={category}
                 className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
-                  currentCategory === category || (category === 'All' && !currentCategory)
+                  currentCategory === category
                     ? 'bg-primary-500 text-white shadow-lg shadow-primary-500/30' 
                     : 'bg-dark-600 text-gray-300 hover:bg-dark-500 hover:text-white border border-dark-500'
                 }`}
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
-                onClick={() => setCurrentCategory(category === 'All' ? null : category)}
+                onClick={() => setCurrentCategory(category)}
                 role="tab"
-                aria-selected={currentCategory === category || (category === 'All' && !currentCategory)}
+                aria-selected={currentCategory === category}
                 aria-controls="projects-grid"
               >
                 {category}
