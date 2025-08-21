@@ -412,6 +412,46 @@ const Projects: React.FC = () => {
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => handleCategoryChange(category)}
+                aria-pressed={currentCategory === category}
+                aria-label={`Filter projects by ${category}`}
+              >
+                {category}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          layout
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <AnimatePresence mode="wait">
+            {filteredProjects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: isFilterTransitioning ? 0 : 1, 
+                  y: isFilterTransitioning ? 20 : 0 
+                }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: isFilterTransitioning ? 0 : index * 0.1,
+                  ease: "easeOut"
+                }}
+                layout
+              >
+                <ProjectCard 
+                  project={project} 
+                  onClick={() => setSelectedProject(project)} 
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
         <AnimatePresence>
           {selectedProject && (
             <ProjectDetail 
