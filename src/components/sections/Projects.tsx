@@ -7,6 +7,7 @@ import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
 import AnimatedDivider from '../ui/AnimatedDivider';
 import { modalScrollManager } from '../../utils/modalScrollLock';
+import { modalScrollManager } from '../../utils/modalScrollManager';
 
 interface Project {
   id: number;
@@ -192,8 +193,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 };
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
-  // Apple-style escape key handling
   React.useEffect(() => {
+    // Lock scroll when modal opens
+    modalScrollManager.lock();
+    
+    // Apple-style escape key handling
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -204,6 +208,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      // Unlock scroll when modal closes
+      modalScrollManager.unlock();
     };
   }, [onClose]);
 
@@ -227,6 +233,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
     >
       <motion.div 
         className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl"
+        data-modal-content
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.95, opacity: 0, y: 20 }}
@@ -340,20 +347,6 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
 const Projects: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentCategory, setCurrentCategory] = useState<string>('All');
-
-  // Apple-style modal scroll management
-  useEffect(() => {
-    if (selectedProject) {
-      modalScrollManager.lock();
-    } else {
-      modalScrollManager.unlock();
-    }
-
-    // Cleanup on unmount
-    return () => {
-      modalScrollManager.unlock();
-    };
-  }, [selectedProject]);
 
   const categories = ['All', ...new Set(projects.map(p => p.category))];
   

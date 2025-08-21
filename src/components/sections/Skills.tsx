@@ -52,20 +52,18 @@ const skills: Record<string, Skill[]> = {
 };
 
 const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, onClick, index }) => {
-  const cardAnimation = fadeIn('up', 0.1 + index * 0.05);
-
   return (
-    <motion.div 
+    <div 
       className={`p-6 rounded-xl cursor-pointer transition-all ${
         isActive 
-          ? 'bg-dark-500 border-2 border-primary-500 shadow-glow' 
-          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50'
-      }`}
+          ? 'bg-dark-500 border-2 border-primary-500 shadow-glow transform-gpu' 
+          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50 hover:-translate-y-1 hover:scale-[1.02]'
+      } will-change-transform duration-300 ease-out`}
       onClick={onClick}
-      whileHover={{ y: -3, scale: 1.02 }}
-      whileTap={{ y: 0, scale: 1.01 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      {...cardAnimation}
+      style={{
+        animationDelay: `${index * 50}ms`,
+        animationFillMode: 'both'
+      }}
       role="tab"
       aria-selected={isActive}
       aria-controls={`skills-panel-${title.toLowerCase()}`}
@@ -85,11 +83,8 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
       </div>
       
       {isActive && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
-          exit={{ opacity: 0, height: 0 }}
-          transition={{ duration: 0.3 }}
+        <div
+          className="animate-fade-in-up"
           id={`skills-panel-${title.toLowerCase()}`}
           role="tabpanel"
           aria-labelledby={`skills-tab-${title.toLowerCase()}`}
@@ -101,18 +96,19 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
                 <span className="text-sm font-medium text-primary-400">{skill.level}%</span>
               </div>
               <div className="w-full h-2 bg-dark-400 rounded-full overflow-hidden" role="progressbar" aria-valuenow={skill.level} aria-valuemin={0} aria-valuemax={100} aria-label={`${skill.name} proficiency`}>
-                <motion.div 
-                  className="h-full bg-gradient-to-r from-primary-600 to-primary-400"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${skill.level}%` }}
-                  transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+                <div 
+                  className="h-full bg-gradient-to-r from-primary-600 to-primary-400 animate-skill-bar"
+                  style={{ 
+                    '--skill-width': `${skill.level}%`,
+                    animationDelay: '200ms'
+                  } as React.CSSProperties}
                 />
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 
@@ -142,10 +138,7 @@ const Skills: React.FC = () => {
 
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16"
-          variants={staggerChildren}
-          initial="hidden"
-          animate="visible"
-          {...containerAnimation}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16 stagger-animation"
           role="tablist"
           aria-label="Technical skills by category"
         >
@@ -217,20 +210,14 @@ const Skills: React.FC = () => {
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" role="list" aria-label="Technologies currently learning">
                 {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item, index) => (
                   <motion.div 
-                    key={item}
+                <div 
                     className="px-4 py-2 bg-dark-600 rounded-full border border-dark-400 text-center text-sm font-medium text-gray-300 hover:bg-primary-500/20 hover:border-primary-500/50 hover:text-primary-400 transition-all duration-300"
-                    variants={staggerItem}
-                    custom={index}
-                    whileHover={{ 
-                      y: -2,
-                      scale: 1.05
-                    }}
-                    whileTap={{ y: 0, scale: 0.98 }}
-                    role="listitem"
+                  className="px-4 py-2 bg-dark-600 rounded-full border border-dark-400 text-center text-sm font-medium text-gray-300 hover:bg-primary-500/20 hover:border-primary-500/50 hover:text-primary-400 transition-all duration-300 hover:-translate-y-1 hover:scale-105 transform-gpu will-change-transform"
+                  style={{ animationDelay: `${index * 100}ms` }}
                   >
                     {item}
                   </motion.div>
-                ))}
+                </div>
               </div>
             </div>
           </div>

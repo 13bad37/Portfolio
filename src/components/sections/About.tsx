@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Brain, Rocket, Zap, LightbulbIcon } from 'lucide-react';
-import { fadeIn } from '../../hooks/useAnimation';
+import { useAppleAnimation, useStaggeredAnimation } from '../../hooks/useAppleAnimations';
 import FloatingElements from '../animations/FloatingElements';
 import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
 import AnimatedDivider from '../ui/AnimatedDivider';
@@ -16,12 +16,10 @@ const About: React.FC = () => {
   const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
-  const imageAnimation = fadeIn('right', 0.3);
-  const textAnimation = fadeIn('left', 0.3);
-  const cardAnimation1 = fadeIn('up', 0.4);
-  const cardAnimation2 = fadeIn('up', 0.5);
-  const cardAnimation3 = fadeIn('up', 0.6);
-  const cardAnimation4 = fadeIn('up', 0.7);
+  const { ref: titleRef } = useAppleAnimation({ delay: 0 });
+  const { ref: imageRef } = useAppleAnimation({ delay: 200, animationType: 'slide-right' });
+  const { ref: textRef } = useAppleAnimation({ delay: 300, animationType: 'slide-left' });
+  const { ref: cardsRef } = useStaggeredAnimation(4, 150);
 
   const parallaxRef = useRef<HTMLDivElement>(null);
 
@@ -68,23 +66,20 @@ const About: React.FC = () => {
       </motion.div>
 
       <div className="container mx-auto px-6">
-        <motion.div 
+        <div 
+          ref={titleRef}
           className="flex flex-col items-center mb-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">About Me</span>
           <h2 id="about-heading" className="text-3xl md:text-4xl font-bold mb-4">Who I Am</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">Get to know more about me, my background, and what I do.</p>
-        </motion.div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <motion.div 
+          <div 
             ref={parallaxRef}
-            className="relative h-[300px] lg:h-[420px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1"
-            {...imageAnimation}
+            className="relative h-[300px] lg:h-[420px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1 apple-animate"
             role="img"
             aria-label="Interactive visual representation of fast learning and problem solving"
           >
@@ -116,9 +111,9 @@ const About: React.FC = () => {
             <div className="parallax-element absolute top-10 left-10 w-16 h-16 rounded-lg bg-secondary-500/20 backdrop-blur-sm z-0" data-depth="8"></div>
             <div className="parallax-element absolute bottom-20 right-20 w-20 h-20 rounded-full bg-primary-500/10 backdrop-blur-sm z-0" data-depth="12"></div>
             <div className="parallax-element absolute top-1/2 right-10 w-12 h-12 rounded-lg bg-accent-500/15 backdrop-blur-sm z-0" data-depth="6"></div>
-          </motion.div>
+          </div>
 
-          <motion.article {...textAnimation} role="article" aria-labelledby="about-content-heading" className="order-1 lg:order-2">
+          <article ref={textRef} role="article" aria-labelledby="about-content-heading" className="order-1 lg:order-2">
             <h3 id="about-content-heading" className="text-2xl font-bold mb-6">Transforming Ideas into Digital Realities</h3>
             
             <p className="text-gray-300 mb-6 leading-relaxed">
@@ -129,11 +124,9 @@ const About: React.FC = () => {
               With experience in web development, C#, and Python, I continuously expand my skillset to become a versatile software engineer. I believe in creating intuitive, efficient solutions that make a positive impact.
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="list" aria-label="Personal qualities and skills">
-              <motion.div 
-                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-colors group"
-                whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                {...cardAnimation1}
+            <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="list" aria-label="Personal qualities and skills">
+              <div 
+                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-all duration-300 group hover:-translate-y-2 hover:shadow-xl transform-gpu will-change-transform apple-button"
                 role="listitem"
               >
                 <div className="bg-primary-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary-500/20 transition-colors">
@@ -141,12 +134,10 @@ const About: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Goal-Oriented</h4>
                 <p className="text-gray-400 text-sm">Committed to becoming a professional software engineer with a focus on creating impactful applications.</p>
-              </motion.div>
+              </div>
               
-              <motion.div 
-                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-colors group"
-                whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                {...cardAnimation2}
+              <div 
+                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-all duration-300 group hover:-translate-y-2 hover:shadow-xl transform-gpu will-change-transform apple-button"
                 role="listitem"
               >
                 <div className="bg-secondary-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-secondary-500/20 transition-colors">
@@ -154,12 +145,10 @@ const About: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Fast Learner</h4>
                 <p className="text-gray-400 text-sm">Quick to adopt new languages and frameworks, with a natural ability to apply concepts across different technologies.</p>
-              </motion.div>
+              </div>
               
-              <motion.div 
-                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-colors group"
-                whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                {...cardAnimation3}
+              <div 
+                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-all duration-300 group hover:-translate-y-2 hover:shadow-xl transform-gpu will-change-transform apple-button"
                 role="listitem"
               >
                 <div className="bg-accent-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-accent-500/20 transition-colors">
@@ -167,12 +156,10 @@ const About: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Creative Problem Solver</h4>
                 <p className="text-gray-400 text-sm">Approaching challenges with innovative thinking and determination to find optimal solutions.</p>
-              </motion.div>
+              </div>
               
-              <motion.div 
-                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-colors group"
-                whileHover={{ y: -5, boxShadow: '0 10px 25px -5px rgba(17, 24, 39, 0.8)' }}
-                {...cardAnimation4}
+              <div 
+                className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-all duration-300 group hover:-translate-y-2 hover:shadow-xl transform-gpu will-change-transform apple-button"
                 role="listitem"
               >
                 <div className="bg-success-500/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4 group-hover:bg-success-500/20 transition-colors">
@@ -180,9 +167,9 @@ const About: React.FC = () => {
                 </div>
                 <h4 className="text-lg font-semibold mb-2">Continuous Learner</h4>
                 <p className="text-gray-400 text-sm">Dedicated to ongoing education and staying current with emerging technologies and best practices.</p>
-              </motion.div>
+              </div>
             </div>
-          </motion.article>
+          </article>
         </div>
       </div>
       
