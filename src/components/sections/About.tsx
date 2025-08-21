@@ -51,7 +51,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-16 relative overflow-hidden" role="region" aria-labelledby="about-heading">
+    <section ref={sectionRef} id="about" className="py-16 relative overflow-hidden content-auto" role="region" aria-labelledby="about-heading">
       <FloatingElements variant="tech" density="light" />
       <EnhancedFloatingElements variant="data-streams" density="light" />
       

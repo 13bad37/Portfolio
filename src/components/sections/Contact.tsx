@@ -35,7 +35,7 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <section id="contact" className="py-16 relative" role="region" aria-labelledby="contact-heading">
+    <section id="contact" className="py-16 relative content-auto" role="region" aria-labelledby="contact-heading">
       <EnhancedFloatingElements variant="floating-icons" density="light" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-600 to-dark-500 opacity-60" aria-hidden="true"></div>
       

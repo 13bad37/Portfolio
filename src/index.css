@@ -221,6 +221,12 @@ body {
   }
 }
 
+@media (max-height: 650px) {
+  .hide-if-short {
+    display: none !important;
+  }
+}
+
 /* Content visibility optimizations for better painting performance */
 .content-auto {
   content-visibility: auto;

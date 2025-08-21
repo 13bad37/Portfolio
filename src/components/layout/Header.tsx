@@ -15,6 +15,7 @@ const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [isHiddenForModal, setIsHiddenForModal] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +40,26 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    const onProjectOpen = () => {
+      if (window.innerWidth <= 768) {
+        setIsHiddenForModal(true);
+        setIsMenuOpen(false);
+      }
+    };
+    const onProjectClose = () => {
+      if (window.innerWidth <= 768) {
+        setIsHiddenForModal(false);
+      }
+    };
+    window.addEventListener('project:open', onProjectOpen as EventListener);
+    window.addEventListener('project:close', onProjectClose as EventListener);
+    return () => {
+      window.removeEventListener('project:open', onProjectOpen as EventListener);
+      window.removeEventListener('project:close', onProjectClose as EventListener);
+    };
+  }, []);
+
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   const headerVariants = {
@@ -53,12 +74,13 @@ const Header: React.FC = () => {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-40 will-change-transform ${
         isScrolled ? 'bg-dark-500/80 backdrop-blur-md py-2 shadow-md' : 'bg-transparent py-4'
       }`}
       variants={headerVariants}
       initial="initial"
-      animate="animate"
+      animate={isHiddenForModal ? { y: -100, opacity: 0 } : 'animate'}
+      transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
       role="banner"
       aria-label="Site header"
     >

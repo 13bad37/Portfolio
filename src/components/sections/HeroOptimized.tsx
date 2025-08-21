@@ -16,7 +16,7 @@ const HeroOptimized: React.FC = memo(() => {
   return (
     <section 
       id="home" 
-      className="min-h-[92vh] flex flex-col justify-center relative overflow-hidden pt-16 apple-section" 
+      className="min-h-[92vh] flex flex-col justify-center relative overflow-hidden pt-16 apple-section content-auto" 
       role="region" 
       aria-labelledby="hero-heading"
     >
@@ -79,7 +79,7 @@ const HeroOptimized: React.FC = memo(() => {
           </p>
           
           <nav
-            className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up"
+            className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up mb-4 sm:mb-0"
             style={{ animationDelay: '0.6s' }}
             role="navigation"
             aria-label="Hero section navigation"
@@ -103,7 +103,7 @@ const HeroOptimized: React.FC = memo(() => {
       </div>
       
       <div 
-        className="absolute bottom-16 left-1/2 flex flex-col items-center text-white/60 z-20 animate-bounce-gentle"
+        className="absolute bottom-3 md:bottom-16 left-1/2 flex flex-col items-center text-white/60 z-20 animate-bounce-gentle hide-if-short"
         style={{ transform: 'translateX(-50%)' }}
         aria-hidden="true"
       >

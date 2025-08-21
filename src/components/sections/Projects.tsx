@@ -209,6 +209,9 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       document.removeEventListener('keydown', handleEscape);
       // Ensure scroll is properly restored on cleanup
       modalScrollManager.unlock();
+      try {
+        window.dispatchEvent(new CustomEvent('project:close'));
+      } catch {}
     };
   }, [onClose]);
 
@@ -272,6 +275,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
             src={project.image} 
             alt={project.title} 
             className="w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-500 via-dark-500/60 to-transparent" aria-hidden="true"></div>
           
@@ -382,7 +387,7 @@ const Projects: React.FC = () => {
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="projects" className="py-16 relative" role="region" aria-labelledby="projects-heading">
+    <section id="projects" className="py-16 relative content-auto" role="region" aria-labelledby="projects-heading">
       <div className="absolute inset-0 bg-gradient-to-br from-dark-600/20 via-dark-500/10 to-dark-600/20" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
@@ -444,7 +449,12 @@ const Projects: React.FC = () => {
               >
                 <ProjectCard 
                   project={project} 
-                  onClick={() => setSelectedProject(project)} 
+                  onClick={() => {
+                    setSelectedProject(project);
+                    try {
+                      window.dispatchEvent(new CustomEvent('project:open'));
+                    } catch {}
+                  }} 
                 />
               </motion.div>
             ))}

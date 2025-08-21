@@ -79,7 +79,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
       }}
     >
       <div className="flex items-center mb-6">
-        <div className={`p-4 rounded-lg mr-4 transition-colors duration-300 ${
+        <div className={`w-12 h-12 rounded-lg mr-4 transition-colors duration-300 flex items-center justify-center ${
           isActive ? 'bg-primary-500/20' : 'bg-dark-500'
         }`} aria-hidden="true">
           {icon}
@@ -124,7 +124,7 @@ const Skills: React.FC = () => {
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="skills" className="py-16 relative" role="region" aria-labelledby="skills-heading">
+    <section id="skills" className="py-16 relative content-auto" role="region" aria-labelledby="skills-heading">
       <FloatingElements variant="code" density="medium" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-500 to-dark-500 opacity-60" aria-hidden="true"></div>
       
@@ -212,7 +212,7 @@ const Skills: React.FC = () => {
                 The tech landscape is constantly evolving, and so am I. My learning journey is ongoing with these areas of focus:
               </p>
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 justify-center justify-items-center" role="list" aria-label="Technologies currently learning">
+              <div className="inline-grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mx-auto" role="list" aria-label="Technologies currently learning">
                 {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item) => (
                   <AppleButton
                     key={item}
