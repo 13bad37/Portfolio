@@ -17,7 +17,6 @@ const About: React.FC = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0]);
 
   const { ref: titleRef } = useAppleAnimation({ delay: 0 });
-  const { ref: imageRef } = useAppleAnimation({ delay: 200, animationType: 'slide-right' });
   const { ref: textRef } = useAppleAnimation({ delay: 300, animationType: 'slide-left' });
   const { ref: cardsRef } = useStaggeredAnimation(4, 150);
 
