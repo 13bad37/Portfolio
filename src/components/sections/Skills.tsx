@@ -221,7 +221,7 @@ const Skills: React.FC = () => {
               </p>
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" role="list" aria-label="Technologies currently learning">
-                {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item, index) => (
+                {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item) => (
                   <AppleButton
                     key={item}
                     variant="ghost"

@@ -412,15 +412,32 @@ const Projects: React.FC = () => {
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => handleCategoryChange(category)}
-        <AnimatePresence>
-          {selectedProject && (
-            <ProjectDetail 
-              project={selectedProject} 
-              onClose={() => setSelectedProject(null)} 
+              >
+                {category}
+              </motion.button>
+            ))}
+          </div>
+        </div>
+
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation"
+          key={currentCategory}
+          initial={isFilterTransitioning ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, staggerChildren: 0.1 }}
+          role="grid"
+          aria-label={`${currentCategory} projects`}
+        >
+          {filteredProjects.map((project, index) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onClick={() => setSelectedProject(project)}
+              index={index}
             />
-          )}
-        </AnimatePresence>
-        
+          ))}
+        </motion.div>
+
         <motion.div 
           className="flex justify-center mt-16"
           initial={{ opacity: 0, y: 20 }}
@@ -445,6 +462,15 @@ const Projects: React.FC = () => {
       </div>
       
       <AnimatedDivider type="dots" />
+
+      <AnimatePresence>
+        {selectedProject && (
+          <ProjectDetail 
+            project={selectedProject} 
+            onClose={() => setSelectedProject(null)} 
+          />
+        )}
+      </AnimatePresence>
     </section>
   );
 };
