@@ -412,51 +412,6 @@ const Projects: React.FC = () => {
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => handleCategoryChange(category)}
-                role="tab"
-                aria-selected={currentCategory === category}
-                aria-controls="projects-grid"
-                disabled={isFilterTransitioning}
-              >
-                {category}
-              </motion.button>
-            ))}
-          </div>
-        </div>
-
-        <motion.div 
-          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 ${
-            isFilterTransitioning ? 'opacity-75 pointer-events-none' : 'opacity-100'
-          }`}
-          layout
-          id="projects-grid"
-          role="tabpanel"
-          aria-label="Project showcase"
-          style={{ transition: 'opacity 0.3s ease-in-out' }}
-        >
-          <AnimatePresence>
-            {filteredProjects.map((project) => (
-              <motion.div
-                key={`${currentCategory}-${project.id}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
-              >
-                <ProjectCard 
-                project={project} 
-                onClick={() => setSelectedProject(project)}
-              />
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-                project={project} 
-                onClick={() => setSelectedProject(project)}
-              />
-            ))}
-          </AnimatePresence>
-        </motion.div>
-
         <AnimatePresence>
           {selectedProject && (
             <ProjectDetail 
