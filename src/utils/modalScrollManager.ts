@@ -13,8 +13,7 @@ class ModalScrollManager {
 
   private detectMobile(): boolean {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-           window.innerWidth <= 768 ||
-           'ontouchstart' in window;
+           window.innerWidth <= 768;
   }
 
   private bindMethods(): void {
@@ -154,10 +153,7 @@ class ModalScrollManager {
     
     // Restore scroll position
     requestAnimationFrame(() => {
-      window.scrollTo({
-        top: this.originalScrollY,
-        behavior: 'instant'
-      });
+      window.scrollTo(0, this.originalScrollY);
     });
   }
 

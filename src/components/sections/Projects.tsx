@@ -5,6 +5,7 @@ import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
 // import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
+import Portal from '../ui/Portal';
 import AnimatedDivider from '../ui/AnimatedDivider';
 import { modalScrollManager } from '../../utils/modalScrollManager';
 
@@ -254,7 +255,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
         {/* Close button: ensure visible on all devices and not cropped */}
         <button 
           onClick={onClose}
-          className="fixed top-10 right-6 z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
+          className="fixed z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
           aria-label="Close project details"
           style={{
             minWidth: '52px',
@@ -488,10 +489,12 @@ const Projects: React.FC = () => {
 
       <AnimatePresence>
         {selectedProject && (
-          <ProjectDetail 
-            project={selectedProject} 
-            onClose={() => setSelectedProject(null)} 
-          />
+          <Portal>
+            <ProjectDetail 
+              project={selectedProject} 
+              onClose={() => setSelectedProject(null)} 
+            />
+          </Portal>
         )}
       </AnimatePresence>
     </section>

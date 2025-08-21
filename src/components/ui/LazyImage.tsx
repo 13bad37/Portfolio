@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 
 interface LazyImageProps {
   src: string;
@@ -55,25 +55,24 @@ const LazyImage: React.FC<LazyImageProps> = ({
     onError?.();
   };
 
-  const supportsWebP = () => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 1;
-    canvas.height = 1;
-    return canvas.toDataURL('image/webp').indexOf('webp') > -1;
-  };
-
-  const getOptimalSrc = () => {
-    if (webpSrc && supportsWebP()) {
-      return webpSrc;
+  const supportsWebP = useMemo(() => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      return canvas.toDataURL('image/webp').indexOf('webp') > -1;
+    } catch {
+      return false;
     }
-    return src;
-  };
+  }, []);
+
+  const optimalSrc = supportsWebP && webpSrc ? webpSrc : src;
 
   return (
     <div className={`relative overflow-hidden ${className}`}>
       <img
         ref={imgRef}
-        src={inView ? (hasError ? placeholder : getOptimalSrc()) : placeholder}
+        src={inView ? (hasError ? placeholder : optimalSrc) : placeholder}
         alt={alt}
         className={`w-full h-full object-cover transition-opacity duration-500 ${
           isLoaded ? 'opacity-100' : 'opacity-0'
