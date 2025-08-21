@@ -3,6 +3,7 @@ import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import HeroOptimized from './components/sections/HeroOptimized';
 import Loader from './components/animations/Loader';
+import ScrollProgress from './components/animations/ScrollProgress';
 import { getPerformanceManager } from './utils/performanceManager';
 
 // Lazy load heavy components
@@ -12,7 +13,6 @@ const Projects = lazy(() => import('./components/sections/Projects'));
 const Contact = lazy(() => import('./components/sections/Contact'));
 const ProgrammingExpertise = lazy(() => import('./components/sections/ProgrammingExpertise'));
 const OptimizedBackground = lazy(() => import('./components/animations/OptimizedBackground'));
-const ScrollProgress = lazy(() => import('./components/animations/ScrollProgress'));
 
 const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
@@ -38,19 +38,24 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-dark-500 text-white font-sans overflow-hidden">
+    <div className="relative min-h-screen bg-dark-500 text-white font-sans overflow-x-hidden">
       {loading ? (
         <Loader />
       ) : (
         <>
+          {/* Always render scroll progress for better UX */}
+          <ScrollProgress />
           <Suspense fallback={null}>
             <OptimizedBackground />
-            <ScrollProgress />
           </Suspense>
           <Header role="banner" />
           <main className="relative z-10" role="main" aria-label="Main content">
             <HeroOptimized />
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div></div>}>
+            <Suspense fallback={
+              <div className="min-h-screen flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-primary-500 border-t-transparent rounded-full animate-spin transform-gpu" />
+              </div>
+            }>
               <About />
               <Skills />
               <Projects />

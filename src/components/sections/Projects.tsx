@@ -194,10 +194,10 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
   React.useEffect(() => {
-    // Lock scroll when modal opens
+    // Lock scroll when modal opens - prevents background scrolling
     modalScrollManager.lock();
     
-    // Apple-style escape key handling
+    // Apple-style escape key handling for better UX
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -215,7 +215,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
 
   return (
     <motion.div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4"
       style={{ 
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         backdropFilter: 'blur(12px)',
@@ -232,7 +232,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       aria-describedby="project-detail-description"
     >
       <motion.div 
-        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl"
+        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl relative"
         data-modal-content
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -249,6 +249,22 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
           scrollbarColor: '#8b5cf6 transparent'
         }}
       >
+        {/* Enhanced mobile-friendly close button */}
+        <button 
+          onClick={onClose}
+          className="absolute top-3 right-3 z-50 p-3 bg-dark-500/90 backdrop-blur-sm rounded-full text-white hover:bg-red-500/80 transition-all duration-200 shadow-lg border border-dark-400/50 touch-target"
+          aria-label="Close project details"
+          style={{
+            minWidth: '44px',
+            minHeight: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <X size={20} strokeWidth={2.5} />
+        </button>
+
         <div className="relative h-64 sm:h-80 overflow-hidden">
           <img 
             src={project.image} 
@@ -256,14 +272,6 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-500 via-dark-500/60 to-transparent" aria-hidden="true"></div>
-          
-          <button 
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 bg-dark-500/80 rounded-full text-white hover:bg-primary-500 transition-colors"
-            aria-label="Close"
-          >
-            <X size={20} />
-          </button>
           
           <div className="absolute bottom-0 left-0 p-6">
             <span className="px-3 py-1 bg-primary-500 text-white text-sm font-medium rounded-full mb-3 inline-block">
@@ -313,7 +321,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-dark-500 text-white rounded-lg font-medium hover:bg-dark-400 transition-colors"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-dark-500 text-white rounded-lg font-medium hover:bg-dark-400 transition-all duration-200 touch-target apple-button"
                 whileHover={{ y: -3 }}
                 whileTap={{ y: 0 }}
                 aria-label={`View source code for ${project.title} on GitHub`}
@@ -328,7 +336,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-colors"
+                className="flex items-center justify-center gap-2 px-6 py-4 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-all duration-200 touch-target apple-button"
                 whileHover={{ y: -3 }}
                 whileTap={{ y: 0 }}
                 aria-label={`View live demo of ${project.title}`}

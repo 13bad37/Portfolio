@@ -40,10 +40,22 @@ class ModalScrollManager {
   }
 
   private lockMobile(): void {
-    // For mobile, we use a lighter approach that doesn't break layout
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'relative';
-    document.body.style.height = '100vh';
+    // Enhanced mobile approach that prevents layout breaks
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // Store current scroll position more reliably
+    this.originalScrollY = window.pageYOffset || html.scrollTop || body.scrollTop || 0;
+    
+    // Apply mobile-friendly scroll lock
+    body.style.overflow = 'hidden';
+    body.style.position = 'relative';
+    body.style.height = '100vh';
+    body.style.width = '100%';
+    
+    // Prevent iOS bounce scrolling
+    body.style.webkitOverflowScrolling = 'touch';
+    html.style.overflow = 'hidden';
     
     // Prevent touch scrolling on the background
     document.addEventListener('touchstart', this.handleTouchStart, { passive: false });
@@ -89,19 +101,35 @@ class ModalScrollManager {
   }
 
   private unlockMobile(): void {
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.height = '';
+    const body = document.body;
+    const html = document.documentElement;
+    
+    // Restore all mobile styles
+    body.style.overflow = '';
+    body.style.position = '';
+    body.style.height = '';
+    body.style.width = '';
+    body.style.webkitOverflowScrolling = '';
+    html.style.overflow = '';
     
     document.removeEventListener('touchstart', this.handleTouchStart);
     document.removeEventListener('touchmove', this.handleTouchMove);
     
     document.body.classList.remove('modal-open-mobile');
     
-    // Restore scroll position smoothly
-    window.scrollTo({
-      top: this.originalScrollY,
-      behavior: 'instant'
+    // Restore scroll position with better reliability
+    requestAnimationFrame(() => {
+      window.scrollTo({
+        top: this.originalScrollY,
+        behavior: 'instant'
+      });
+      
+      // Double-check scroll restoration
+      setTimeout(() => {
+        if (window.pageYOffset !== this.originalScrollY) {
+          window.scrollTo(0, this.originalScrollY);
+        }
+      }, 10);
     });
   }
 

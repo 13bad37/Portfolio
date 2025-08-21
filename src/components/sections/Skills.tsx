@@ -4,6 +4,7 @@ import { Globe, Server, Database, Settings, Code, Puzzle } from 'lucide-react';
 import { fadeIn } from '../../hooks/useAnimation';
 import FloatingElements from '../animations/FloatingElements';
 import AnimatedDivider from '../ui/AnimatedDivider';
+import AppleButton from '../ui/AppleButton';
 
 interface Skill {
   name: string;
@@ -54,11 +55,11 @@ const skills: Record<string, Skill[]> = {
 const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, onClick, index }) => {
   return (
     <div 
-      className={`p-6 rounded-xl cursor-pointer transition-all ${
+      className={`p-6 rounded-xl cursor-pointer transition-all apple-button touch-target ${
         isActive 
-          ? 'bg-dark-500 border-2 border-primary-500 shadow-glow transform-gpu' 
-          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50 hover:-translate-y-1 hover:scale-[1.02]'
-      } will-change-transform duration-300 ease-out`}
+          ? 'bg-dark-500 border-2 border-primary-500 shadow-lg shadow-primary-500/25 transform-gpu' 
+          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50'
+      } will-change-transform duration-200 ease-out`}
       onClick={onClick}
       style={{
         animationDelay: `${index * 50}ms`,
@@ -84,7 +85,7 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
       
       {isActive && (
         <div
-          className="animate-fade-in-up"
+          className="animate-fade-in-up apple-animate in-view"
           id={`skills-panel-${title.toLowerCase()}`}
           role="tabpanel"
           aria-labelledby={`skills-tab-${title.toLowerCase()}`}
@@ -97,10 +98,11 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
               </div>
               <div className="w-full h-2 bg-dark-400 rounded-full overflow-hidden" role="progressbar" aria-valuenow={skill.level} aria-valuemin={0} aria-valuemax={100} aria-label={`${skill.name} proficiency`}>
                 <div 
-                  className="h-full bg-gradient-to-r from-primary-600 to-primary-400 animate-skill-bar"
+                  className="h-full bg-gradient-to-r from-primary-600 to-primary-400 animate-skill-bar transform-gpu"
                   style={{ 
                     '--skill-width': `${skill.level}%`,
-                    animationDelay: '200ms'
+                    animationDelay: '200ms',
+                    willChange: 'width'
                   } as React.CSSProperties}
                 />
               </div>
@@ -187,7 +189,7 @@ const Skills: React.FC = () => {
         </motion.div>
 
         <motion.div 
-          className="bg-dark-600 p-8 rounded-2xl border border-dark-400"
+          className="bg-dark-600 p-8 rounded-2xl border border-dark-400 apple-animate"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
@@ -207,13 +209,14 @@ const Skills: React.FC = () => {
               
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" role="list" aria-label="Technologies currently learning">
                 {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item, index) => (
-                  <div 
+                  <AppleButton
                     key={item}
-                    className="px-4 py-2 bg-dark-600 rounded-full border border-dark-400 text-center text-sm font-medium text-gray-300 hover:bg-primary-500/20 hover:border-primary-500/50 hover:text-primary-400 transition-all duration-300 hover:-translate-y-1 hover:scale-105 transform-gpu will-change-transform"
-                    style={{ animationDelay: `${index * 100}ms` }}
+                    variant="ghost"
+                    size="sm"
+                    className="text-center text-sm"
                   >
                     {item}
-                  </div>
+                  </AppleButton>
                 ))}
               </div>
             </div>

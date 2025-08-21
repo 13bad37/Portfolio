@@ -250,11 +250,54 @@ body {
   }
 }
 
+/* Enhanced Apple-style animations */
+@keyframes apple-glow {
+  0%, 100% { 
+    opacity: 0.2; 
+    transform: scale(1) rotate(0deg); 
+  }
+  50% { 
+    opacity: 0.4; 
+    transform: scale(1.1) rotate(180deg); 
+  }
+}
+
+@keyframes apple-float {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px); 
+  }
+  33% { 
+    transform: translateY(-20px) translateX(10px); 
+  }
+  66% { 
+    transform: translateY(10px) translateX(-10px); 
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%) skewX(-12deg); }
+  100% { transform: translateX(200%) skewX(-12deg); }
+}
+
+/* Apple-style component classes */
+.apple-glow {
+  animation: apple-glow 8s ease-in-out infinite;
+}
+
+.apple-float {
+  animation: apple-float 6s ease-in-out infinite;
+}
+
+.apple-section {
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
 /* Intersection Observer triggered animations */
 .apple-animate {
   opacity: 0;
   transform: translate3d(0, 30px, 0);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apple-animate.in-view {
@@ -265,7 +308,7 @@ body {
 .apple-scale {
   opacity: 0;
   transform: scale3d(0.95, 0.95, 1);
-  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apple-scale.in-view {
@@ -273,12 +316,13 @@ body {
   transform: scale3d(1, 1, 1);
 }
 
-/* Enhanced button hover effects */
+/* Enhanced Apple button hover effects */
 .apple-button {
   position: relative;
   overflow: hidden;
   transform: translate3d(0, 0, 0);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform, box-shadow;
 }
 
 .apple-button::before {
@@ -288,29 +332,76 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-  transition: left 0.5s ease;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: transform 0.6s ease;
+  transform: skewX(-12deg);
 }
 
 .apple-button:hover::before {
-  left: 100%;
+  animation: shimmer 0.6s ease-out;
 }
 
 .apple-button:hover {
-  transform: translate3d(0, -2px, 0) scale(1.02);
-  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.4);
+  transform: translate3d(0, -3px, 0) scale(1.02);
+  box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.4);
+}
+
+.apple-button:active {
+  transform: translate3d(0, -1px, 0) scale(0.98);
+  transition-duration: 0.1s;
+}
+
+/* Touch target improvements for mobile */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Enhanced modal styles */
+.modal-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.95);
+}
+
+/* Improved scrollbar styling */
+.modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.6);
+  border-radius: 3px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.8);
 }
 
 /* Smooth scrolling enhancements */
 @supports (scroll-behavior: smooth) {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 100px;
+    scroll-padding-top: 80px;
+    scroll-snap-type: y proximity;
   }
 }
 
 /* Performance optimizations for mobile */
 @media (max-width: 768px) {
+  .apple-glow,
+  .apple-float {
+    animation-duration: 4s; /* Reduce animation complexity on mobile */
+  }
+  
   .modal-open-mobile {
     -webkit-overflow-scrolling: auto;
     overscroll-behavior: none;
@@ -319,25 +410,39 @@ body {
   /* Reduce animations on mobile for better performance */
   .apple-animate,
   .apple-scale {
-    transition-duration: 0.4s;
+    transition-duration: 0.3s;
   }
   
   /* Disable complex hover effects on touch devices */
   .apple-button:hover {
-    transform: none;
-    box-shadow: none;
+    transform: translate3d(0, 0, 0) scale(1);
+    box-shadow: 0 5px 15px -3px rgba(139, 92, 246, 0.3);
   }
   
   .apple-button::before {
-    display: none;
+    opacity: 0;
+  }
+  
+  /* Enhanced touch targets */
+  .touch-target {
+    min-height: 48px;
+    min-width: 48px;
+    padding: 12px;
   }
 }
+
 /* Reduced motion preferences */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  
+  .apple-glow,
+  .apple-float,
+  .shimmer {
+    animation: none !important;
   }
   
   .parallax {

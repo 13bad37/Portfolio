@@ -1,5 +1,7 @@
 import React, { useRef, memo } from 'react';
 import { ArrowDown } from 'lucide-react';
+import ParallaxSection from '../animations/ParallaxSection';
+import AppleButton from '../ui/AppleButton';
 
 const HeroOptimized: React.FC = memo(() => {
   const textRef = useRef<HTMLHeadingElement>(null);
@@ -14,35 +16,46 @@ const HeroOptimized: React.FC = memo(() => {
   return (
     <section 
       id="home" 
-      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20" 
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 apple-section" 
       role="region" 
       aria-labelledby="hero-heading"
     >
-      {/* Minimal CSS-only background elements */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div
-          className="absolute top-1/5 right-1/5 w-24 h-24 rounded-full opacity-30 animate-pulse-slow"
-          style={{
-            background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.1), transparent 70%)',
-            filter: 'blur(20px)',
-            animationDuration: '8s'
-          }}
-        />
-        
-        <div
-          className="absolute bottom-1/4 left-1/5 w-16 h-16 rounded-full opacity-20 animate-pulse-slow"
-          style={{
-            background: 'radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.08), transparent 60%)',
-            filter: 'blur(15px)',
-            animationDelay: '3s',
-            animationDuration: '12s'
-          }}
-        />
-      </div>
+      {/* Enhanced Apple-style background with parallax */}
+      <ParallaxSection speed={0.3} className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0">
+          {/* Dynamic gradient orbs with improved animations */}
+          <div
+            className="absolute top-1/5 right-1/5 w-32 h-32 rounded-full opacity-40 apple-glow"
+            style={{
+              background: 'radial-gradient(circle at 30% 30%, rgba(139, 92, 246, 0.15), transparent 70%)',
+              filter: 'blur(25px)',
+            }}
+          />
+          
+          <div
+            className="absolute bottom-1/4 left-1/5 w-24 h-24 rounded-full opacity-30 apple-glow"
+            style={{
+              background: 'radial-gradient(circle at 40% 40%, rgba(59, 130, 246, 0.12), transparent 60%)',
+              filter: 'blur(20px)',
+              animationDelay: '2s'
+            }}
+          />
+          
+          {/* Additional floating elements for depth */}
+          <div
+            className="absolute top-1/2 left-1/3 w-20 h-20 rounded-full opacity-20 apple-float"
+            style={{
+              background: 'radial-gradient(circle, rgba(236, 72, 153, 0.1), transparent 60%)',
+              filter: 'blur(15px)',
+              animationDelay: '4s'
+            }}
+          />
+        </div>
+      </ParallaxSection>
 
       <div className="container mx-auto px-6 z-10">
         <div className="max-w-3xl mx-auto text-center">
-          <div className="mb-6 inline-block bg-primary-500/20 px-4 py-1 rounded-full animate-fade-in">
+          <div className="mb-6 inline-block bg-primary-500/20 backdrop-blur-sm px-4 py-2 rounded-full animate-fade-in border border-primary-500/30">
             <span className="text-primary-400 font-mono">Hello, I'm Nonso Nkire</span>
           </div>
           
@@ -71,20 +84,20 @@ const HeroOptimized: React.FC = memo(() => {
             role="navigation"
             aria-label="Hero section navigation"
           >
-            <a
+            <AppleButton
+              variant="primary"
+              size="lg"
               href="#projects"
-              className="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg shadow-primary-500/20 flex items-center justify-center transform hover:-translate-y-2 hover:scale-105"
-              aria-label="View my projects"
             >
               View My Work
-            </a>
-            <a
+            </AppleButton>
+            <AppleButton
+              variant="ghost"
+              size="lg"
               href="#contact"
-              className="bg-transparent hover:bg-white/10 text-white border border-white/20 px-8 py-3 rounded-lg font-medium transition-all duration-300 flex items-center justify-center transform hover:-translate-y-2 hover:scale-105 hover:border-primary-500/50"
-              aria-label="Get in touch with me"
             >
               Get In Touch
-            </a>
+            </AppleButton>
           </nav>
         </div>
       </div>
