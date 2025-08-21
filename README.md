@@ -2,7 +2,7 @@
 
 A portfolio website that demonstrates modern web development skills through interactive features, smooth animations, and responsive design.
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-nkirev2.netlify.app-blue?style=for-the-badge&logo=netlify)](https://nkirev2.netlify.app)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-nonso.software-blue?style=for-the-badge&logo=netlify)](https://www.nonso.software/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Framer Motion](https://img.shields.io/badge/Framer%20Motion-black?style=for-the-badge&logo=framer&logoColor=blue)](https://www.framer.com/motion/)
