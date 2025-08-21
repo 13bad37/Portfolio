@@ -700,12 +700,12 @@ const ProgrammingExpertise: React.FC = () => {
   const currentLanguage = languageData[selectedLanguage];
 
   return (
-    <section id="programming-expertise" className="py-20 relative">
+    <section id="programming-expertise" className="py-16 relative">
       <div className="absolute inset-0 bg-dark-600 opacity-50" />
       <div className="container-responsive relative z-10">
-        <motion.div ref={titleRef as React.RefObject<HTMLDivElement>} animate={titleAnim} className="flex flex-col items-center mb-16 text-center">
+        <motion.div ref={titleRef as React.RefObject<HTMLDivElement>} animate={titleAnim} className="flex flex-col items-center mb-12 text-center">
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">Programming Expertise</span>
-          <h2 className="heading-responsive font-bold mb-4">Programming Languages</h2>
+          <h2 className="heading-responsive font-bold mb-4 heading-enhanced">Programming Languages</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6" />
           <p className="max-w-3xl text-gray-300 text-responsive">
             Proficiency in multiple programming languages with deep understanding of their ecosystems, 

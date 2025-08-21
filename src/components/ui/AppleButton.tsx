@@ -12,15 +12,7 @@ interface AppleButtonProps {
   loading?: boolean;
 }
 
-/**
- * Apple-inspired button component with sophisticated animations
- * Features:
- * - Smooth scale and elevation animations
- * - Shimmer effect on hover
- * - Hardware-accelerated transforms
- * - Proper touch targets for mobile
- * - Loading states with spinner
- */
+
 const AppleButton: React.FC<AppleButtonProps> = ({
   children,
   variant = 'primary',

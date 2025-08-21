@@ -81,7 +81,7 @@ const Header: React.FC = () => {
               <motion.a
                 key={item.name}
                 href={item.href}
-                className={`relative px-1 py-2 font-medium transition-colors ${
+                className={`relative px-1 py-2 font-medium transition-colors hover-underline ${
                   activeSection === item.href.substring(1)
                     ? 'text-primary-400'
                     : 'text-gray-300 hover:text-white'

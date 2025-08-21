@@ -55,11 +55,11 @@ const skills: Record<string, Skill[]> = {
 const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, onClick, index }) => {
   return (
     <div 
-      className={`p-8 rounded-xl cursor-pointer transition-all duration-300 ease-out touch-target ${
+      className={`p-4 lg:p-6 rounded-xl cursor-pointer transition-all duration-300 ease-out touch-target ${
         isActive 
           ? 'bg-dark-500 border-2 border-primary-500 shadow-lg shadow-primary-500/25 transform scale-105' 
           : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50 hover:transform hover:scale-102 hover:shadow-lg'
-      } will-change-transform`}
+      } will-change-transform min-h-[220px] lg:min-h-[260px] flex flex-col`}
       onClick={onClick}
       style={{
         animationDelay: `${index * 50}ms`,
@@ -124,26 +124,26 @@ const Skills: React.FC = () => {
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="skills" className="py-20 relative" role="region" aria-labelledby="skills-heading">
+    <section id="skills" className="py-16 relative" role="region" aria-labelledby="skills-heading">
       <FloatingElements variant="code" density="medium" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-500 to-dark-500 opacity-60" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
-          className="flex flex-col items-center mb-16 text-center"
+          className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">My Expertise</span>
-          <h2 id="skills-heading" className="text-3xl md:text-4xl font-bold mb-4">Technical Skills</h2>
+          <h2 id="skills-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Technical Skills</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">
             A showcase of my technical abilities and ongoing learning journey in software development.
           </p>
         </motion.div>
 
-        {/* FIXED: Reverted to spaced-out layout for better mobile experience */}
+        {/* REDESIGNED: Single horizontal line on desktop, mobile-friendly stacking */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6 mb-16 max-w-7xl mx-auto"
           role="tablist"
           aria-label="Technical skills by category"
         >
@@ -174,21 +174,13 @@ const Skills: React.FC = () => {
             index={2}
           />
           
-          {/* Second row for better spacing */}
-        </motion.div>
-        
-        <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto"
-          role="tablist"
-          aria-label="Additional technical skills"
-        >
           <SkillCard 
             icon={<Settings className="h-6 w-6 text-success-500" />} 
             title="Tools" 
             skills={skills.tools}
             isActive={activeCategory === 'tools'}
             onClick={() => setActiveCategory('tools')}
-            index={0}
+            index={3}
           />
           
           <SkillCard 
@@ -197,7 +189,7 @@ const Skills: React.FC = () => {
             skills={skills.other}
             isActive={activeCategory === 'other'}
             onClick={() => setActiveCategory('other')}
-            index={1}
+            index={4}
           />
         </motion.div>
 
@@ -220,7 +212,7 @@ const Skills: React.FC = () => {
                 The tech landscape is constantly evolving, and so am I. My learning journey is ongoing with these areas of focus:
               </p>
               
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3" role="list" aria-label="Technologies currently learning">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 justify-center justify-items-center" role="list" aria-label="Technologies currently learning">
                 {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item) => (
                   <AppleButton
                     key={item}

@@ -24,7 +24,14 @@ export const useAnimationOnScroll = ({
     if (inView) {
       controls.start({
         ...visible,
-        transition: { delay, duration: 0.5, ease: 'easeOut' },
+        transition: { 
+          delay, 
+          duration: 0.4, 
+          ease: [0.25, 0.46, 0.45, 0.94],
+          type: "spring",
+          stiffness: 400,
+          damping: 30
+        },
       });
     } else {
       controls.start(hidden);

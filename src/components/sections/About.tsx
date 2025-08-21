@@ -51,7 +51,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-20 relative overflow-hidden" role="region" aria-labelledby="about-heading">
+    <section ref={sectionRef} id="about" className="py-16 relative overflow-hidden" role="region" aria-labelledby="about-heading">
       <FloatingElements variant="tech" density="light" />
       <EnhancedFloatingElements variant="data-streams" density="light" />
       
@@ -67,86 +67,56 @@ const About: React.FC = () => {
       <div className="container mx-auto px-6">
         <div 
           ref={titleRef}
-          className="flex flex-col items-center mb-16 text-center"
+          className="flex flex-col items-center mb-12 text-center"
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">About Me</span>
-          <h2 id="about-heading" className="text-3xl md:text-4xl font-bold mb-4">Who I Am</h2>
+          <h2 id="about-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Who I Am</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">Get to know more about me, my background, and what I do.</p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-          <div 
-            ref={parallaxRef}
-            className="relative h-[350px] lg:h-[450px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1 apple-animate"
-            role="img"
-            aria-label="Interactive visual representation of fast learning and problem solving"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-dark-500/40 to-dark-500/60 z-10"></div>
-            <div className="parallax-element absolute inset-0 flex flex-col justify-center items-center text-center px-8 z-20" data-depth="2">
-              <motion.div
-                animate={{ 
-                  scale: [1, 1.1, 1],
-                  rotate: [0, 5, -5, 0],
-                  boxShadow: [
-                    '0 0 20px rgba(139, 92, 246, 0.2)',
-                    '0 0 40px rgba(139, 92, 246, 0.4)',
-                    '0 0 20px rgba(139, 92, 246, 0.2)'
-                  ]
-                }}
-                transition={{ 
-                  duration: 6, 
-                  repeat: Infinity,
-                  ease: "easeInOut" 
-                }}
-                className="p-6 rounded-full bg-gradient-to-br from-primary-500/20 to-secondary-500/20 backdrop-blur-sm mb-8 border border-primary-500/40"
-                aria-hidden="true"
-              >
-                <Brain className="h-16 w-16 text-primary-400" />
-              </motion.div>
-              <h3 className="text-2xl font-bold mb-4">Fast Learner & Problem Solver</h3>
-              <p className="text-gray-300">I thrive in challenging environments that push me to expand my knowledge and skills.</p>
+        {/* REDESIGNED: Centered layout with no blank space */}
+        <div className="flex flex-col items-center max-w-6xl mx-auto">
+          {/* REDESIGNED: Centered content with proper hierarchy */}
+          <article ref={textRef} role="article" aria-labelledby="about-content-heading" className="text-center w-full mb-12">
+            <h3 id="about-content-heading" className="text-3xl md:text-4xl font-bold mb-8">Transforming Ideas into Digital Realities</h3>
+            
+            <div className="max-w-4xl mx-auto space-y-6">
+              <p className="text-gray-300 text-lg leading-relaxed">
+                I'm Nonso Nkire, an engineering student with a focus on computer and software systems. My journey in technology is driven by curiosity and a passion for solving complex problems through elegant code.
+              </p>
+              
+              <p className="text-gray-300 text-lg leading-relaxed">
+                With experience in web development, C#, and Python, I continuously expand my skillset to become a versatile software engineer. I believe in creating intuitive, efficient solutions that make a positive impact.
+              </p>
             </div>
-            <div className="parallax-element absolute top-10 left-10 w-16 h-16 rounded-lg bg-secondary-500/20 backdrop-blur-sm z-0" data-depth="8"></div>
-            <div className="parallax-element absolute bottom-20 right-20 w-20 h-20 rounded-full bg-primary-500/10 backdrop-blur-sm z-0" data-depth="12"></div>
-            <div className="parallax-element absolute top-1/2 right-10 w-12 h-12 rounded-lg bg-accent-500/15 backdrop-blur-sm z-0" data-depth="6"></div>
-          </div>
+          </article>
 
-          <article ref={textRef} role="article" aria-labelledby="about-content-heading" className="order-1 lg:order-2">
-            <h3 id="about-content-heading" className="text-2xl font-bold mb-6">Transforming Ideas into Digital Realities</h3>
-            
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              I'm Nonso Nkire, an engineering student with a focus on computer and software systems. My journey in technology is driven by curiosity and a passion for solving complex problems through elegant code.
-            </p>
-            
-            <p className="text-gray-300 mb-8 leading-relaxed">
-              With experience in web development, C#, and Python, I continuously expand my skillset to become a versatile software engineer. I believe in creating intuitive, efficient solutions that make a positive impact.
-            </p>
-
-            {/* ENHANCED: Added more content to fill empty space */}
-            <div className="bg-dark-600/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-dark-400/30">
-              <h4 className="text-lg font-semibold mb-4 text-primary-400">Current Focus Areas</h4>
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                  <span className="text-gray-300">Full-Stack Development</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-secondary-500 rounded-full"></div>
-                  <span className="text-gray-300">System Architecture</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-accent-500 rounded-full"></div>
-                  <span className="text-gray-300">Performance Optimization</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-success-500 rounded-full"></div>
-                  <span className="text-gray-300">User Experience Design</span>
-                </div>
+          {/* REDESIGNED: Elongated Current Focus Areas widget spanning full width with fixed color dot */}
+          <div className="bg-dark-600/50 backdrop-blur-sm rounded-xl p-8 mb-6 border border-dark-400/30 w-full max-w-5xl">
+            <h4 className="text-xl font-semibold mb-6 text-primary-400 text-center">Current Focus Areas</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-primary-500 rounded-full flex-shrink-0"></div>
+                <span className="text-gray-300 font-medium">Full-Stack Development</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-secondary-500 rounded-full flex-shrink-0"></div>
+                <span className="text-gray-300 font-medium">System Architecture</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-accent-500 rounded-full flex-shrink-0"></div>
+                <span className="text-gray-300 font-medium">Performance Optimization</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-3 h-3 bg-warning-500 rounded-full flex-shrink-0"></div>
+                <span className="text-gray-300 font-medium">User Experience Design</span>
               </div>
             </div>
+          </div>
 
-            <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="list" aria-label="Personal qualities and skills">
+          {/* REDESIGNED: Single line of cards on desktop */}
+          <div ref={cardsRef} className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl" role="list" aria-label="Personal qualities and skills">
               <div 
                 className="bg-dark-600 p-5 rounded-xl border border-dark-400 hover:border-primary-500/50 transition-all duration-300 group hover:-translate-y-2 hover:shadow-xl transform-gpu will-change-transform apple-button"
                 role="listitem"
@@ -191,9 +161,8 @@ const About: React.FC = () => {
                 <p className="text-gray-400 text-sm">Dedicated to ongoing education and staying current with emerging technologies and best practices.</p>
               </div>
             </div>
-          </article>
+          </div>
         </div>
-      </div>
       
       <AnimatedDivider type="gradient" />
     </section>

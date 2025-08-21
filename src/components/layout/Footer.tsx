@@ -90,7 +90,7 @@ const Footer: React.FC = () => {
                 <li key={item} role="listitem">
                   <motion.a
                     href={`#${item.toLowerCase().replace(' ', '-')}`}
-                    className="text-gray-400 hover:text-primary-400 transition-colors"
+                    className="text-gray-400 hover:text-primary-400 transition-colors hover-underline"
                     whileHover={{ x: 3 }}
                     aria-label={`Go to ${item} section`}
                     onClick={(e) => {

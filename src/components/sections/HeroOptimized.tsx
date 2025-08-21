@@ -16,7 +16,7 @@ const HeroOptimized: React.FC = memo(() => {
   return (
     <section 
       id="home" 
-      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 apple-section" 
+      className="min-h-[92vh] flex flex-col justify-center relative overflow-hidden pt-16 apple-section" 
       role="region" 
       aria-labelledby="hero-heading"
     >
@@ -72,7 +72,7 @@ const HeroOptimized: React.FC = memo(() => {
           </h1>
           
           <p
-            className="text-gray-300 text-lg md:text-xl mb-12 leading-relaxed animate-fade-in-up"
+            className="text-gray-300 text-lg md:text-xl mb-10 leading-relaxed animate-fade-in-up"
             style={{ animationDelay: '0.4s' }}
           >
             Computer & Software Systems Engineering student passionate about creating seamless digital experiences. Proficient in web development, C#, and Python.
@@ -103,7 +103,7 @@ const HeroOptimized: React.FC = memo(() => {
       </div>
       
       <div 
-        className="absolute bottom-8 left-1/2 flex flex-col items-center text-white/60 z-20 animate-bounce-gentle"
+        className="absolute bottom-16 left-1/2 flex flex-col items-center text-white/60 z-20 animate-bounce-gentle"
         style={{ transform: 'translateX(-50%)' }}
         aria-hidden="true"
       >

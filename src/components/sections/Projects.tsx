@@ -3,10 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Code, ExternalLink, Github, X, ChevronRight } from 'lucide-react';
 import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
-import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+// import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
 import AnimatedDivider from '../ui/AnimatedDivider';
-import { modalScrollManager } from '../../utils/modalScrollLock';
 import { modalScrollManager } from '../../utils/modalScrollManager';
 
 interface Project {
@@ -87,13 +86,14 @@ const projects: Project[] = [
 
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
   const [isHovered, hoverProps] = useHoverState();
-  const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
+  // const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
   const cardAnimation = fadeIn('up', 0.2);
 
   return (
     <motion.div 
-      ref={ref}
-      className="group rounded-xl overflow-hidden bg-dark-600 border border-dark-400 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform smooth-hover"
+      ref={cardAnimation.ref as unknown as React.RefObject<HTMLDivElement>}
+      animate={cardAnimation.controls}
+      className="group rounded-xl overflow-hidden bg-dark-600 border border-dark-400 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform smooth-hover h-full flex flex-col"
       whileHover={{ 
         y: -8, 
         scale: 1.02,
@@ -102,7 +102,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       whileTap={{ y: -2, scale: 1.01 }}
       onClick={onClick}
       {...hoverProps}
-      {...cardAnimation}
       role="button"
       tabIndex={0}
       aria-label={`View details for ${project.title}`}
@@ -113,7 +112,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
         }
       }}
     >
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden tilt-hover image-zoom">
         <LazyImage 
           src={project.image}
           alt={project.title}
@@ -128,7 +127,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
         </div>
       </div>
       
-      <div className="p-6">
+      <div className="p-6 flex flex-col flex-grow">
         <motion.h3 
           className="text-xl font-bold mb-2 text-white group-hover:text-primary-400 transition-colors duration-300"
           layout
@@ -249,10 +248,10 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
           scrollbarColor: '#8b5cf6 transparent'
         }}
       >
-        {/* FIXED: Mobile-accessible close button with proper positioning and touch targets */}
+        {/* Close button: ensure visible on all devices and not cropped */}
         <button 
           onClick={onClose}
-          className="fixed top-4 right-4 z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large"
+          className="fixed top-10 right-6 z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
           aria-label="Close project details"
           style={{
             minWidth: '52px',
@@ -260,9 +259,9 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            // Ensure button stays within safe area on mobile
-            top: 'max(1rem, env(safe-area-inset-top, 1rem))',
-            right: 'max(1rem, env(safe-area-inset-right, 1rem))'
+            // Ensure button stays within safe area on mobile and is fully visible
+            top: 'max(2.5rem, env(safe-area-inset-top, 2.5rem))',
+            right: 'max(1.5rem, env(safe-area-inset-right, 1.5rem))'
           }}
         >
           <X size={24} strokeWidth={3} />
@@ -383,16 +382,16 @@ const Projects: React.FC = () => {
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="projects" className="py-20 relative" role="region" aria-labelledby="projects-heading">
+    <section id="projects" className="py-16 relative" role="region" aria-labelledby="projects-heading">
       <div className="absolute inset-0 bg-gradient-to-br from-dark-600/20 via-dark-500/10 to-dark-600/20" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
-          className="flex flex-col items-center mb-16 text-center"
+          className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">My Work</span>
-          <h2 id="projects-heading" className="text-3xl md:text-4xl font-bold mb-4">Featured Projects</h2>
+          <h2 id="projects-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Featured Projects</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">
             A selection of my projects showcasing my skills and experience in software development.
@@ -412,11 +411,8 @@ const Projects: React.FC = () => {
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => handleCategoryChange(category)}
-<<<<<<< HEAD
-=======
                 aria-pressed={currentCategory === category}
                 aria-label={`Filter projects by ${category}`}
->>>>>>> 4dfd5b05e390ced557ac45b11892ef0fa6a26e73
               >
                 {category}
               </motion.button>
@@ -425,23 +421,7 @@ const Projects: React.FC = () => {
         </div>
 
         <motion.div 
-<<<<<<< HEAD
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation"
-          key={currentCategory}
-          initial={isFilterTransitioning ? { opacity: 0, y: 20 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, staggerChildren: 0.1 }}
-          role="grid"
-          aria-label={`${currentCategory} projects`}
-        >
-          {filteredProjects.map((project, index) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onClick={() => setSelectedProject(project)}
-              index={index}
-=======
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto items-stretch"
           layout
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
@@ -469,16 +449,6 @@ const Projects: React.FC = () => {
               </motion.div>
             ))}
           </AnimatePresence>
-        </motion.div>
-
-        <AnimatePresence>
-          {selectedProject && (
-            <ProjectDetail 
-              project={selectedProject} 
-              onClose={() => setSelectedProject(null)} 
->>>>>>> 4dfd5b05e390ced557ac45b11892ef0fa6a26e73
-            />
-          ))}
         </motion.div>
 
         <motion.div 

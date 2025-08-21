@@ -109,7 +109,7 @@ const AnimatedDivider: React.FC<AnimatedDividerProps> = ({ type = 'gradient', cl
       case 'gradient':
       default:
         return (
-          <div className={`relative py-12 ${className}`}>
+          <div className={`relative py-8 ${className}`}>
             <motion.div
               className="h-px bg-gradient-to-r from-transparent via-primary-500 to-transparent mx-auto"
               style={{ width: '60%' }}

@@ -35,17 +35,17 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <section id="contact" className="py-20 relative" role="region" aria-labelledby="contact-heading">
+    <section id="contact" className="py-16 relative" role="region" aria-labelledby="contact-heading">
       <EnhancedFloatingElements variant="floating-icons" density="light" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-600 to-dark-500 opacity-60" aria-hidden="true"></div>
       
       <div className="container mx-auto px-6 relative z-10">
         <motion.div 
-          className="flex flex-col items-center mb-16 text-center"
+          className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">Get In Touch</span>
-          <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold mb-4">Contact Me</h2>
+          <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Contact Me</h2>
           <div className="w-20 h-1.5 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-full mb-6"></div>
           <p className="max-w-2xl text-gray-300">
             Ready to collaborate or have questions about my work? I'm always excited to discuss new projects, 
@@ -72,20 +72,24 @@ const Contact: React.FC = () => {
             {contactMethods.map((method, index) => (
               <motion.div
                 key={method.title}
-                className="bg-dark-600/80 backdrop-blur-sm rounded-xl border border-dark-400 p-8 text-center group hover:border-primary-500/50 transition-all duration-300"
+                className="bg-dark-600/80 backdrop-blur-sm rounded-xl border border-dark-400 p-8 text-center group hover:border-primary-500/50 transition-all duration-300 transform-gpu will-change-transform"
                 whileHover={{ 
                   y: -10, 
                   scale: 1.03,
-                  boxShadow: '0 20px 40px -10px rgba(139, 92, 246, 0.3)',
-                  rotateY: 2
+                  boxShadow: '0 20px 40px -10px rgba(139, 92, 246, 0.3)'
                 }}
                 whileTap={{ scale: 0.98 }}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                transition={{ 
+                  delay: index * 0.05,
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 25
+                }}
               >
                 <div className="flex justify-center mb-4">
-                  <div className="p-4 bg-dark-500 rounded-full group-hover:bg-primary-500/20 transition-colors duration-300">
+                  <div className="p-4 bg-dark-500 rounded-full group-hover:bg-primary-500/20 transition-colors duration-300 transform-gpu">
                     {method.icon}
                   </div>
                 </div>
