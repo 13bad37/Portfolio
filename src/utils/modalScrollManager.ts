@@ -117,19 +117,24 @@ class ModalScrollManager {
     
     document.body.classList.remove('modal-open-mobile');
     
-    // Restore scroll position with better reliability
+    // ENHANCED: More reliable scroll position restoration
     requestAnimationFrame(() => {
-      window.scrollTo({
-        top: this.originalScrollY,
-        behavior: 'instant'
-      });
+      // Use multiple methods to ensure scroll restoration works
+      window.scrollTo(0, this.originalScrollY);
+      document.documentElement.scrollTop = this.originalScrollY;
+      document.body.scrollTop = this.originalScrollY;
       
-      // Double-check scroll restoration
+      // Triple-check scroll restoration with fallback
       setTimeout(() => {
-        if (window.pageYOffset !== this.originalScrollY) {
+        const currentScroll = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        if (Math.abs(currentScroll - this.originalScrollY) > 5) {
           window.scrollTo(0, this.originalScrollY);
+          // Force scroll restoration if still not correct
+          setTimeout(() => {
+            window.scrollTo(0, this.originalScrollY);
+          }, 50);
         }
-      }, 10);
+      }, 20);
     });
   }
 

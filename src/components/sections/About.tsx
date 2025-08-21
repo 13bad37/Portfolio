@@ -78,7 +78,7 @@ const About: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
           <div 
             ref={parallaxRef}
-            className="relative h-[300px] lg:h-[420px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1 apple-animate"
+            className="relative h-[350px] lg:h-[450px] rounded-2xl overflow-hidden bg-dark-400 border border-dark-300 order-2 lg:order-1 apple-animate"
             role="img"
             aria-label="Interactive visual representation of fast learning and problem solving"
           >
@@ -122,6 +122,29 @@ const About: React.FC = () => {
             <p className="text-gray-300 mb-8 leading-relaxed">
               With experience in web development, C#, and Python, I continuously expand my skillset to become a versatile software engineer. I believe in creating intuitive, efficient solutions that make a positive impact.
             </p>
+
+            {/* ENHANCED: Added more content to fill empty space */}
+            <div className="bg-dark-600/50 backdrop-blur-sm rounded-xl p-6 mb-8 border border-dark-400/30">
+              <h4 className="text-lg font-semibold mb-4 text-primary-400">Current Focus Areas</h4>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
+                  <span className="text-gray-300">Full-Stack Development</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-secondary-500 rounded-full"></div>
+                  <span className="text-gray-300">System Architecture</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-accent-500 rounded-full"></div>
+                  <span className="text-gray-300">Performance Optimization</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-success-500 rounded-full"></div>
+                  <span className="text-gray-300">User Experience Design</span>
+                </div>
+              </div>
+            </div>
 
             <div ref={cardsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-6" role="list" aria-label="Personal qualities and skills">
               <div 

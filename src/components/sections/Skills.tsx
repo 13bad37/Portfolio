@@ -55,15 +55,17 @@ const skills: Record<string, Skill[]> = {
 const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, onClick, index }) => {
   return (
     <div 
-      className={`p-6 rounded-xl cursor-pointer transition-all apple-button touch-target ${
+      className={`p-8 rounded-xl cursor-pointer transition-all duration-300 ease-out touch-target ${
         isActive 
-          ? 'bg-dark-500 border-2 border-primary-500 shadow-lg shadow-primary-500/25 transform-gpu' 
-          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50'
-      } will-change-transform duration-200 ease-out`}
+          ? 'bg-dark-500 border-2 border-primary-500 shadow-lg shadow-primary-500/25 transform scale-105' 
+          : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50 hover:transform hover:scale-102 hover:shadow-lg'
+      } will-change-transform`}
       onClick={onClick}
       style={{
         animationDelay: `${index * 50}ms`,
-        animationFillMode: 'both'
+        animationFillMode: 'both',
+        // Removed tacky shine effect, kept smooth hover transitions
+        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
       }}
       role="tab"
       aria-selected={isActive}
@@ -76,11 +78,13 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
         }
       }}
     >
-      <div className="flex items-center mb-4">
-        <div className={`p-3 rounded-lg mr-4 ${isActive ? 'bg-primary-500/20' : 'bg-dark-500'}`} aria-hidden="true">
+      <div className="flex items-center mb-6">
+        <div className={`p-4 rounded-lg mr-4 transition-colors duration-300 ${
+          isActive ? 'bg-primary-500/20' : 'bg-dark-500'
+        }`} aria-hidden="true">
           {icon}
         </div>
-        <h3 className="text-xl font-semibold">{title}</h3>
+        <h3 className="text-xl font-semibold text-white">{title}</h3>
       </div>
       
       {isActive && (
@@ -137,8 +141,9 @@ const Skills: React.FC = () => {
           </p>
         </motion.div>
 
+        {/* FIXED: Reverted to spaced-out layout for better mobile experience */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-16 stagger-animation"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16 max-w-6xl mx-auto"
           role="tablist"
           aria-label="Technical skills by category"
         >
@@ -169,13 +174,21 @@ const Skills: React.FC = () => {
             index={2}
           />
           
+          {/* Second row for better spacing */}
+        </motion.div>
+        
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16 max-w-4xl mx-auto"
+          role="tablist"
+          aria-label="Additional technical skills"
+        >
           <SkillCard 
             icon={<Settings className="h-6 w-6 text-success-500" />} 
             title="Tools" 
             skills={skills.tools}
             isActive={activeCategory === 'tools'}
             onClick={() => setActiveCategory('tools')}
-            index={3}
+            index={0}
           />
           
           <SkillCard 
@@ -184,7 +197,7 @@ const Skills: React.FC = () => {
             skills={skills.other}
             isActive={activeCategory === 'other'}
             onClick={() => setActiveCategory('other')}
-            index={4}
+            index={1}
           />
         </motion.div>
 

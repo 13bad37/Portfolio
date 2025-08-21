@@ -117,11 +117,30 @@ body {
   width: 100% !important;
 }
 
+/* Enhanced touch targets for mobile accessibility */
+.touch-target-large {
+  min-height: 52px;
+  min-width: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Ensure proper positioning on mobile devices */
+  position: relative;
+  z-index: 10000;
+}
+
 /* Enhanced mobile touch interactions */
 @media (max-width: 768px) {
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+  }
+  
+  .touch-target-large {
+    min-height: 56px;
+    min-width: 56px;
+    /* Increased padding for easier touch interaction */
+    padding: 16px;
   }
 
   /* Disable hover effects on touch devices */
@@ -142,12 +161,36 @@ body {
     height: 100% !important;
     -webkit-overflow-scrolling: auto;
   }
+  
+  /* Ensure modal close button is always accessible */
+  .modal-close-button {
+    position: fixed !important;
+    top: max(1rem, env(safe-area-inset-top, 1rem)) !important;
+    right: max(1rem, env(safe-area-inset-right, 1rem)) !important;
+    z-index: 10001 !important;
+  }
 }
 
 /* Content visibility optimizations for better painting performance */
 .content-auto {
   content-visibility: auto;
   contain-intrinsic-size: 500px;
+}
+
+/* Enhanced skill card animations without tacky shine effect */
+.skill-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: center;
+}
+
+.skill-card-hover:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.3);
+}
+
+.skill-card-active {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 15px 35px -5px rgba(139, 92, 246, 0.4);
 }
 
 /* Optimized animations for Hero component */
@@ -165,6 +208,37 @@ body {
     opacity: 1; 
     transform: translateY(0); 
   }
+}
+
+/* Smooth project filtering transitions */
+@keyframes project-filter-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes project-filter-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+.project-filter-enter {
+  animation: project-filter-in 0.3s ease-out forwards;
+}
+
+.project-filter-exit {
+  animation: project-filter-out 0.3s ease-out forwards;
 }
 
 @keyframes pulse-slow {

@@ -194,10 +194,10 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
   React.useEffect(() => {
-    // Lock scroll when modal opens - prevents background scrolling
+    // Enhanced scroll lock with better mobile handling
     modalScrollManager.lock();
     
-    // Apple-style escape key handling for better UX
+    // Comprehensive keyboard handling for accessibility
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         onClose();
@@ -208,7 +208,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      // Unlock scroll when modal closes
+      // Ensure scroll is properly restored on cleanup
       modalScrollManager.unlock();
     };
   }, [onClose]);
@@ -249,20 +249,23 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
           scrollbarColor: '#8b5cf6 transparent'
         }}
       >
-        {/* Enhanced mobile-friendly close button */}
+        {/* FIXED: Mobile-accessible close button with proper positioning and touch targets */}
         <button 
           onClick={onClose}
-          className="absolute top-3 right-3 z-50 p-3 bg-dark-500/90 backdrop-blur-sm rounded-full text-white hover:bg-red-500/80 transition-all duration-200 shadow-lg border border-dark-400/50 touch-target"
+          className="fixed top-4 right-4 z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large"
           aria-label="Close project details"
           style={{
-            minWidth: '44px',
-            minHeight: '44px',
+            minWidth: '52px',
+            minHeight: '52px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            // Ensure button stays within safe area on mobile
+            top: 'max(1rem, env(safe-area-inset-top, 1rem))',
+            right: 'max(1rem, env(safe-area-inset-right, 1rem))'
           }}
         >
-          <X size={20} strokeWidth={2.5} />
+          <X size={24} strokeWidth={3} />
         </button>
 
         <div className="relative h-64 sm:h-80 overflow-hidden">
@@ -355,12 +358,27 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
 const Projects: React.FC = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentCategory, setCurrentCategory] = useState<string>('All');
+  const [isFilterTransitioning, setIsFilterTransitioning] = useState(false);
 
   const categories = ['All', ...new Set(projects.map(p => p.category))];
   
+  // Fixed filtering logic - ensures proper state management and smooth transitions
   const filteredProjects = currentCategory === 'All'
     ? projects
     : projects.filter(p => p.category === currentCategory);
+
+  // Enhanced category change handler with transition management
+  const handleCategoryChange = (category: string) => {
+    if (category === currentCategory) return;
+    
+    setIsFilterTransitioning(true);
+    setCurrentCategory(category);
+    
+    // Allow animation to complete before removing transition state
+    setTimeout(() => {
+      setIsFilterTransitioning(false);
+    }, 300);
+  };
 
   const titleAnimation = fadeIn('up');
 
@@ -393,10 +411,11 @@ const Projects: React.FC = () => {
                 }`}
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
-                onClick={() => setCurrentCategory(category)}
+                onClick={() => handleCategoryChange(category)}
                 role="tab"
                 aria-selected={currentCategory === category}
                 aria-controls="projects-grid"
+                disabled={isFilterTransitioning}
               >
                 {category}
               </motion.button>
@@ -405,16 +424,32 @@ const Projects: React.FC = () => {
         </div>
 
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8"
+          className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 ${
+            isFilterTransitioning ? 'opacity-75 pointer-events-none' : 'opacity-100'
+          }`}
           layout
           id="projects-grid"
           role="tabpanel"
           aria-label="Project showcase"
+          style={{ transition: 'opacity 0.3s ease-in-out' }}
         >
           <AnimatePresence>
             {filteredProjects.map((project) => (
-              <ProjectCard 
-                key={project.id} 
+              <motion.div
+                key={`${currentCategory}-${project.id}`}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <ProjectCard 
+                project={project} 
+                onClick={() => setSelectedProject(project)}
+              />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
                 project={project} 
                 onClick={() => setSelectedProject(project)}
               />
