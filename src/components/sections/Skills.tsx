@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion } from 'framer-motion';
 import { Globe, Server, Database, Settings, Code, Puzzle } from 'lucide-react';
 import { fadeIn } from '../../hooks/useAnimation';
@@ -118,17 +118,17 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
   );
 };
 
-const Skills: React.FC = () => {
+const Skills: React.FC = memo(() => {
   const [activeCategory, setActiveCategory] = useState('frontend');
 
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="skills" className="py-16 relative content-auto" role="region" aria-labelledby="skills-heading">
+    <section id="skills" className="py-12 sm:py-16 lg:py-20 relative content-auto" role="region" aria-labelledby="skills-heading">
       <FloatingElements variant="code" density="medium" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-500 to-dark-500 opacity-60" aria-hidden="true"></div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
@@ -232,6 +232,8 @@ const Skills: React.FC = () => {
       <AnimatedDivider type="tech" />
     </section>
   );
-};
+});
+
+Skills.displayName = 'Skills';
 
 export default Skills;

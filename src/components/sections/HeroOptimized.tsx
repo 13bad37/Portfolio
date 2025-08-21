@@ -16,7 +16,7 @@ const HeroOptimized: React.FC = memo(() => {
   return (
     <section 
       id="home" 
-      className="min-h-[92vh] flex flex-col justify-center relative overflow-hidden pt-16 apple-section content-auto" 
+      className="min-h-[100vh] flex flex-col justify-center relative overflow-hidden pt-20 sm:pt-16 apple-section content-auto" 
       role="region" 
       aria-labelledby="hero-heading"
     >
@@ -53,7 +53,7 @@ const HeroOptimized: React.FC = memo(() => {
         </div>
       </ParallaxSection>
 
-      <div className="container mx-auto px-6 z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 z-10">
         <div className="max-w-3xl mx-auto text-center">
           <div className="mb-6 inline-block bg-primary-500/20 backdrop-blur-sm px-4 py-2 rounded-full animate-fade-in border border-primary-500/30">
             <span className="text-primary-400 font-mono">Hello, I'm Nonso Nkire</span>

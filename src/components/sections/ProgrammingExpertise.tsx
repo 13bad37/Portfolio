@@ -700,7 +700,7 @@ const ProgrammingExpertise: React.FC = () => {
   const currentLanguage = languageData[selectedLanguage];
 
   return (
-    <section id="programming-expertise" className="py-16 relative content-auto">
+    <section id="programming-expertise" className="py-12 sm:py-16 lg:py-20 relative content-auto">
       <div className="absolute inset-0 bg-dark-600 opacity-50" />
       <div className="container-responsive relative z-10">
         <motion.div ref={titleRef as React.RefObject<HTMLDivElement>} animate={titleAnim} className="flex flex-col items-center mb-12 text-center">

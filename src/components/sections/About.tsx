@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Brain, Rocket, Zap, LightbulbIcon } from 'lucide-react';
 import { useAppleAnimation, useStaggeredAnimation } from '../../hooks/useAppleAnimations';
@@ -6,7 +6,7 @@ import FloatingElements from '../animations/FloatingElements';
 import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
 import AnimatedDivider from '../ui/AnimatedDivider';
 
-const About: React.FC = () => {
+const About: React.FC = memo(() => {
   const sectionRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -51,7 +51,7 @@ const About: React.FC = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-16 relative overflow-hidden content-auto" role="region" aria-labelledby="about-heading">
+    <section ref={sectionRef} id="about" className="py-12 sm:py-16 lg:py-20 relative overflow-hidden content-auto" role="region" aria-labelledby="about-heading">
       <FloatingElements variant="tech" density="light" />
       <EnhancedFloatingElements variant="data-streams" density="light" />
       
@@ -64,7 +64,7 @@ const About: React.FC = () => {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 rounded-full bg-secondary-500/10 blur-3xl transform translate-x-1/2 translate-y-1/2"></div>
       </motion.div>
 
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div 
           ref={titleRef}
           className="flex flex-col items-center mb-12 text-center"
@@ -167,6 +167,8 @@ const About: React.FC = () => {
       <AnimatedDivider type="gradient" />
     </section>
   );
-};
+});
+
+About.displayName = 'About';
 
 export default About;

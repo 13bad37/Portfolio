@@ -70,12 +70,12 @@ const Header: React.FC = () => {
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-40 will-change-transform ${
+      className={`fixed top-0 left-0 right-0 z-50 will-change-transform ${
         isScrolled ? 'bg-dark-500/80 backdrop-blur-md py-2 shadow-md' : 'bg-transparent py-4'
       }`}
       variants={headerVariants}
       initial="initial"
-      animate={isHiddenForModal ? { y: -100, opacity: 0 } : 'animate'}
+      animate={isHiddenForModal ? { y: -100, opacity: 0, zIndex: -1 } : 'animate'}
       transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
       role="banner"
       aria-label="Site header"
@@ -183,7 +183,7 @@ const Header: React.FC = () => {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-dark-500 z-50 md:hidden"
+            className="fixed inset-0 bg-dark-500 z-[60] md:hidden"
             variants={menuVariants}
             initial="closed"
             animate="open"

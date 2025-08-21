@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code, ExternalLink, Github, X, ChevronRight } from 'lucide-react';
 import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
-// import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 import LazyImage from '../ui/LazyImage';
 import Portal from '../ui/Portal';
 import AnimatedDivider from '../ui/AnimatedDivider';
@@ -85,7 +84,7 @@ const projects: Project[] = [
   }
 ];
 
-const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
+const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({ project, onClick }) => {
   const [isHovered, hoverProps] = useHoverState();
   // const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
   const cardAnimation = fadeIn('up', 0.2);
@@ -129,25 +128,22 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       </div>
       
       <div className="p-6 flex flex-col flex-grow">
-        <motion.h3 
+        <h3 
           className="text-xl font-bold mb-2 text-white group-hover:text-primary-400 transition-colors duration-300"
-          layout
         >
           {project.title}
-        </motion.h3>
+        </h3>
         
-        <motion.p 
+        <p 
           className="text-gray-300 mb-4 line-clamp-2"
-          layout
         >
           {project.description}
-        </motion.p>
+        </p>
         
-        <motion.div 
+        <div 
           className="flex flex-wrap gap-2 mb-4" 
           role="list" 
           aria-label="Technologies used"
-          layout
         >
           {project.technologies.slice(0, 3).map((tech, index) => (
             <motion.span 
@@ -170,7 +166,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
               +{project.technologies.length - 3}
             </motion.span>
           )}
-        </motion.div>
+        </div>
         
         <motion.div 
           className="flex items-center text-primary-400 text-sm font-medium"
@@ -190,9 +186,9 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       </div>
     </motion.div>
   );
-};
+});
 
-const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ project, onClose }) => {
+const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(({ project, onClose }) => {
   React.useEffect(() => {
     // Enhanced scroll lock with better mobile handling
     modalScrollManager.lock();
@@ -212,13 +208,15 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       modalScrollManager.unlock();
       try {
         window.dispatchEvent(new CustomEvent('project:close'));
-      } catch {}
+      } catch {
+        // Event dispatch failed
+      }
     };
   }, [onClose]);
 
   return (
     <motion.div 
-      className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-2 sm:p-4"
       style={{ 
         backgroundColor: 'rgba(15, 23, 42, 0.95)',
         backdropFilter: 'blur(12px)',
@@ -235,7 +233,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       aria-describedby="project-detail-description"
     >
       <motion.div 
-        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl relative"
+        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl relative modal-content"
         data-modal-content
         initial={{ scale: 0.95, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -249,13 +247,15 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
         onClick={(e) => e.stopPropagation()}
         style={{
           scrollbarWidth: 'thin',
-          scrollbarColor: '#8b5cf6 transparent'
+          scrollbarColor: '#8b5cf6 transparent',
+          marginTop: 'max(60px, env(safe-area-inset-top, 60px))',
+          marginBottom: 'max(20px, env(safe-area-inset-bottom, 20px))'
         }}
       >
         {/* Close button: ensure visible on all devices and not cropped */}
         <button 
           onClick={onClose}
-          className="fixed z-[10000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
+          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
           aria-label="Close project details"
           style={{
             minWidth: '52px',
@@ -264,8 +264,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
             alignItems: 'center',
             justifyContent: 'center',
             // Ensure button stays within safe area on mobile and is fully visible
-            top: 'max(2.5rem, env(safe-area-inset-top, 2.5rem))',
-            right: 'max(1.5rem, env(safe-area-inset-right, 1.5rem))'
+            top: 'max(1rem, env(safe-area-inset-top, 1rem))',
+            right: 'max(1rem, env(safe-area-inset-right, 1rem))'
           }}
         >
           <X size={24} strokeWidth={3} />
@@ -358,9 +358,9 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = ({ pr
       </motion.div>
     </motion.div>
   );
-};
+});
 
-const Projects: React.FC = () => {
+const Projects: React.FC = memo(() => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentCategory, setCurrentCategory] = useState<string>('All');
   const [isFilterTransitioning, setIsFilterTransitioning] = useState(false);
@@ -388,10 +388,10 @@ const Projects: React.FC = () => {
   const titleAnimation = fadeIn('up');
 
   return (
-    <section id="projects" className="py-16 relative content-auto" role="region" aria-labelledby="projects-heading">
+    <section id="projects" className="py-12 sm:py-16 lg:py-20 relative content-auto" role="region" aria-labelledby="projects-heading">
       <div className="absolute inset-0 bg-gradient-to-br from-dark-600/20 via-dark-500/10 to-dark-600/20" aria-hidden="true"></div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
@@ -446,7 +446,6 @@ const Projects: React.FC = () => {
                   delay: isFilterTransitioning ? 0 : index * 0.1,
                   ease: "easeOut"
                 }}
-                layout
               >
                 <ProjectCard 
                   project={project} 
@@ -454,7 +453,9 @@ const Projects: React.FC = () => {
                     setSelectedProject(project);
                     try {
                       window.dispatchEvent(new CustomEvent('project:open'));
-                    } catch {}
+                    } catch {
+                      // Event dispatch failed
+                    }
                   }} 
                 />
               </motion.div>
@@ -499,6 +500,10 @@ const Projects: React.FC = () => {
       </AnimatePresence>
     </section>
   );
-};
+});
+
+ProjectCard.displayName = 'ProjectCard';
+ProjectDetail.displayName = 'ProjectDetail';
+Projects.displayName = 'Projects';
 
 export default Projects;

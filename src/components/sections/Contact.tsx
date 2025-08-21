@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { motion } from 'framer-motion';
 import { Github, Linkedin, Mail, MapPin, ExternalLink } from 'lucide-react';
 import { fadeIn } from '../../hooks/useAnimation';
 import LocationWeather from '../ui/LocationWeather';
 import EnhancedFloatingElements from '../animations/EnhancedFloatingElements';
 
-const Contact: React.FC = () => {
+const Contact: React.FC = memo(() => {
   const titleAnimation = fadeIn('up');
   const contactInfoAnimation = fadeIn('up', 0.3);
   const socialAnimation = fadeIn('up', 0.5);
@@ -35,11 +35,11 @@ const Contact: React.FC = () => {
   ];
 
   return (
-    <section id="contact" className="py-16 relative content-auto" role="region" aria-labelledby="contact-heading">
+    <section id="contact" className="py-12 sm:py-16 lg:py-20 relative content-auto" role="region" aria-labelledby="contact-heading">
       <EnhancedFloatingElements variant="floating-icons" density="light" />
       <div className="absolute inset-0 bg-gradient-radial from-dark-600 to-dark-500 opacity-60" aria-hidden="true"></div>
       
-      <div className="container mx-auto px-6 relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="flex flex-col items-center mb-12 text-center"
           {...titleAnimation}
@@ -172,6 +172,8 @@ const Contact: React.FC = () => {
       </div>
     </section>
   );
-};
+});
+
+Contact.displayName = 'Contact';
 
 export default Contact;

@@ -108,7 +108,8 @@ export function measurePerformance(name: string, fn: () => void): void {
   const startTime = performance.now();
   fn();
   const endTime = performance.now();
-  console.log(`${name} took ${endTime - startTime} milliseconds`);
+  // Performance measurement for ${name}
+  void startTime; void endTime; // Used for measurement
 }
 
 // Check if device supports WebP

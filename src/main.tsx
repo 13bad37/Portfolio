@@ -15,5 +15,5 @@ createRoot(document.getElementById('root')!).render(
 
 // Report web vitals in development
 if (import.meta.env.DEV) {
-  reportWebVitals(console.log);
+  reportWebVitals();
 }
