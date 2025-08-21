@@ -412,6 +412,11 @@ const Projects: React.FC = () => {
                 whileHover={{ y: -3, scale: 1.05 }}
                 whileTap={{ y: 0, scale: 0.98 }}
                 onClick={() => handleCategoryChange(category)}
+<<<<<<< HEAD
+=======
+                aria-pressed={currentCategory === category}
+                aria-label={`Filter projects by ${category}`}
+>>>>>>> 4dfd5b05e390ced557ac45b11892ef0fa6a26e73
               >
                 {category}
               </motion.button>
@@ -420,6 +425,7 @@ const Projects: React.FC = () => {
         </div>
 
         <motion.div 
+<<<<<<< HEAD
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 stagger-animation"
           key={currentCategory}
           initial={isFilterTransitioning ? { opacity: 0, y: 20 } : false}
@@ -434,6 +440,43 @@ const Projects: React.FC = () => {
               project={project}
               onClick={() => setSelectedProject(project)}
               index={index}
+=======
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          layout
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+        >
+          <AnimatePresence mode="wait">
+            {filteredProjects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: isFilterTransitioning ? 0 : 1, 
+                  y: isFilterTransitioning ? 20 : 0 
+                }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ 
+                  duration: 0.3, 
+                  delay: isFilterTransitioning ? 0 : index * 0.1,
+                  ease: "easeOut"
+                }}
+                layout
+              >
+                <ProjectCard 
+                  project={project} 
+                  onClick={() => setSelectedProject(project)} 
+                />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        </motion.div>
+
+        <AnimatePresence>
+          {selectedProject && (
+            <ProjectDetail 
+              project={selectedProject} 
+              onClose={() => setSelectedProject(null)} 
+>>>>>>> 4dfd5b05e390ced557ac45b11892ef0fa6a26e73
             />
           ))}
         </motion.div>
