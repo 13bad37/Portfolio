@@ -42,15 +42,11 @@ const Header: React.FC = () => {
 
   useEffect(() => {
     const onProjectOpen = () => {
-      if (window.innerWidth <= 768) {
-        setIsHiddenForModal(true);
-        setIsMenuOpen(false);
-      }
+      setIsHiddenForModal(true);
+      setIsMenuOpen(false);
     };
     const onProjectClose = () => {
-      if (window.innerWidth <= 768) {
-        setIsHiddenForModal(false);
-      }
+      setIsHiddenForModal(false);
     };
     window.addEventListener('project:open', onProjectOpen as EventListener);
     window.addEventListener('project:close', onProjectClose as EventListener);
