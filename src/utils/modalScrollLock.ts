@@ -1,17 +1,25 @@
-// Apple-style modal scroll management - flawless UX
+// Mobile-friendly modal scroll management
 class ModalScrollManager {
   private originalScrollY: number = 0;
   private isLocked: boolean = false;
+  private originalOverflow: string = '';
+  private originalPosition: string = '';
   
   lock(): void {
     if (this.isLocked) return;
     
-    // Store the current scroll position
+    // Store current scroll position and body styles
     this.originalScrollY = window.pageYOffset;
+    this.originalOverflow = document.body.style.overflow;
+    this.originalPosition = document.body.style.position;
     
-    // Add modal-open class to body for CSS-based scroll prevention
-    document.body.classList.add('modal-open');
+    // Prevent scrolling without breaking mobile layout
+    document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
     document.body.style.top = `-${this.originalScrollY}px`;
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.classList.add('modal-open');
     
     this.isLocked = true;
   }
@@ -19,12 +27,23 @@ class ModalScrollManager {
   unlock(): void {
     if (!this.isLocked) return;
     
-    // Remove modal-open class
+    // Restore body styles
     document.body.classList.remove('modal-open');
+    document.body.style.overflow = this.originalOverflow;
+    document.body.style.position = this.originalPosition;
     document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
     
     // Restore scroll position smoothly without rubber band
-    window.scrollTo(0, this.originalScrollY);
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        window.scrollTo({
+          top: this.originalScrollY,
+          behavior: 'instant'
+        });
+      });
+    });
     
     this.isLocked = false;
   }

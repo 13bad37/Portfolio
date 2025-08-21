@@ -52,7 +52,7 @@ const skills: Record<string, Skill[]> = {
 };
 
 const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, onClick, index }) => {
-  const cardAnimation = fadeIn('up', 0.2 + index * 0.1);
+  const cardAnimation = fadeIn('up', 0.1 + index * 0.05);
 
   return (
     <motion.div 
@@ -62,8 +62,9 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
           : 'bg-dark-600 border border-dark-400 hover:border-primary-500/50'
       }`}
       onClick={onClick}
-      whileHover={{ y: -5 }}
-      whileTap={{ y: 0 }}
+      whileHover={{ y: -3, scale: 1.02 }}
+      whileTap={{ y: 0, scale: 1.01 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
       {...cardAnimation}
       role="tab"
       aria-selected={isActive}
@@ -217,14 +218,14 @@ const Skills: React.FC = () => {
                 {['React Native', 'TypeScript', 'Cloud Computing', 'Machine Learning'].map((item, index) => (
                   <motion.div 
                     key={item}
-                    className="px-4 py-2 bg-dark-500 rounded-lg border border-dark-400 text-center text-sm font-medium"
+                    className="px-4 py-2 bg-dark-600 rounded-full border border-dark-400 text-center text-sm font-medium text-gray-300 hover:bg-primary-500/20 hover:border-primary-500/50 hover:text-primary-400 transition-all duration-300"
                     variants={staggerItem}
                     custom={index}
                     whileHover={{ 
-                      scale: 1.05, 
-                      backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                      borderColor: 'rgba(139, 92, 246, 0.5)'
+                      y: -2,
+                      scale: 1.05
                     }}
+                    whileTap={{ y: 0, scale: 0.98 }}
                     role="listitem"
                   >
                     {item}
