@@ -14,7 +14,10 @@ interface Step {
 const DEFAULT_ARRAY = [38, 7, 23, 18, 52, 11, 9, 41, 2, 29, 14, 6];
 
 function generateRandomArray(length: number): number[] {
-  return Array.from({ length }, () => Math.floor(Math.random() * 99) + 1);
+  // Limit array size for performance
+  const maxLength = 50; // Prevent excessive step generation
+  const safeLength = Math.min(length, maxLength);
+  return Array.from({ length: safeLength }, () => Math.floor(Math.random() * 99) + 1);
 }
 
 function clone(arr: number[]): number[] {
@@ -281,7 +284,12 @@ const Showcase: React.FC = () => {
   const { ref: titleRef, controls: titleAnim } = fadeIn('up');
   const { ref: gridRef, controls: gridAnim } = fadeIn('up', 0.15);
 
-  const steps = useMemo(() => getStepsForAlgorithm(algorithm, array), [algorithm, array]);
+  const steps = useMemo(() => {
+    // Limit step generation for performance
+    const maxSteps = 1000; // Prevent memory issues with large arrays
+    const allSteps = getStepsForAlgorithm(algorithm, array);
+    return allSteps.length > maxSteps ? allSteps.slice(0, maxSteps) : allSteps;
+  }, [algorithm, array]);
 
   useEffect(() => {
     if (!isPlaying) return;

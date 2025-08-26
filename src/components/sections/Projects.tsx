@@ -86,20 +86,24 @@ const projects: Project[] = [
 
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({ project, onClick }) => {
   const [isHovered, hoverProps] = useHoverState();
-  // const { ref } = useIntersectionObserver<HTMLDivElement>({ threshold: 0.2 });
   const cardAnimation = fadeIn('up', 0.2);
 
   return (
     <motion.div 
       ref={cardAnimation.ref as unknown as React.RefObject<HTMLDivElement>}
       animate={cardAnimation.controls}
-      className="group rounded-xl overflow-hidden bg-dark-600 border border-dark-400 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform smooth-hover h-full flex flex-col"
+      className="group rounded-2xl overflow-hidden bg-dark-600/80 backdrop-blur-sm border border-dark-400/50 hover:border-primary-500/50 transition-all duration-300 relative cursor-pointer transform-gpu will-change-transform h-full flex flex-col shadow-lg"
       whileHover={{ 
-        y: -8, 
+        y: -10, 
         scale: 1.02,
-        boxShadow: '0 20px 40px -12px rgba(139, 92, 246, 0.2)'
+        boxShadow: '0 25px 50px -10px rgba(139, 92, 246, 0.3)',
+        transition: { type: "spring", damping: 20, stiffness: 400 }
       }}
-      whileTap={{ y: -2, scale: 1.01 }}
+      whileTap={{ 
+        y: -5, 
+        scale: 1.01,
+        transition: { type: "spring", damping: 30, stiffness: 500 }
+      }}
       onClick={onClick}
       {...hoverProps}
       role="button"
@@ -112,47 +116,52 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
         }
       }}
     >
-      <div className="relative h-48 overflow-hidden tilt-hover image-zoom">
+      {/* Enhanced image container with better hover effects */}
+      <div className="relative h-48 overflow-hidden">
         <LazyImage 
           src={project.image}
           alt={project.title}
-          className="w-full h-full transition-transform duration-500 group-hover:scale-110 transform-gpu"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 transform-gpu"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-dark-500 via-dark-500/20 to-transparent transition-opacity duration-300 group-hover:opacity-75" aria-hidden="true"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-500/90 via-dark-500/20 to-transparent transition-opacity duration-300 group-hover:opacity-80" aria-hidden="true"></div>
         
-        <div className="absolute top-3 left-3">
-          <span className="px-3 py-1 bg-primary-500/90 text-white text-xs font-medium rounded-full">
+        {/* Enhanced category badge */}
+        <motion.div 
+          className="absolute top-4 left-4"
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", damping: 20, stiffness: 400 }}
+        >
+          <span className="px-3 py-1.5 bg-primary-500/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full border border-primary-400/30">
             {project.category}
           </span>
-        </div>
+        </motion.div>
+
+        {/* Subtle overlay glow effect */}
+        <motion.div
+          className="absolute inset-0 bg-gradient-radial from-primary-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          aria-hidden="true"
+        />
       </div>
       
       <div className="p-6 flex flex-col flex-grow">
-        <h3 
-          className="text-xl font-bold mb-2 text-white group-hover:text-primary-400 transition-colors duration-300"
-        >
+        <h3 className="text-xl font-bold mb-3 text-white group-hover:text-primary-400 transition-colors duration-300">
           {project.title}
         </h3>
         
-        <p 
-          className="text-gray-300 mb-4 line-clamp-2"
-        >
+        <p className="text-gray-300 mb-4 line-clamp-2 leading-relaxed">
           {project.description}
         </p>
         
-        <div 
-          className="flex flex-wrap gap-2 mb-4" 
-          role="list" 
-          aria-label="Technologies used"
-        >
+        {/* Enhanced technology tags */}
+        <div className="flex flex-wrap gap-2 mb-6" role="list" aria-label="Technologies used">
           {project.technologies.slice(0, 3).map((tech, index) => (
             <motion.span 
               key={tech} 
-              className="px-2 py-1 bg-dark-500 text-primary-300 text-xs rounded transition-all duration-200 hover:bg-primary-500/20 hover:text-primary-400"
+              className="px-3 py-1 bg-dark-500/80 text-primary-300 text-xs font-medium rounded-lg border border-dark-400/30 transition-all duration-200 hover:bg-primary-500/20 hover:text-primary-400 hover:border-primary-500/30"
               role="listitem"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1, duration: 0.3 }}
+              transition={{ delay: index * 0.1, duration: 0.3, type: "spring", damping: 25, stiffness: 400 }}
               whileHover={{ scale: 1.05 }}
             >
               {tech}
@@ -160,7 +169,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
           ))}
           {project.technologies.length > 3 && (
             <motion.span 
-              className="px-2 py-1 bg-dark-500 text-primary-300 text-xs rounded"
+              className="px-3 py-1 bg-dark-500/80 text-primary-300 text-xs font-medium rounded-lg border border-dark-400/30"
               whileHover={{ scale: 1.05 }}
             >
               +{project.technologies.length - 3}
@@ -168,19 +177,20 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
           )}
         </div>
         
+        {/* Enhanced call to action */}
         <motion.div 
-          className="flex items-center text-primary-400 text-sm font-medium"
+          className="flex items-center text-primary-400 text-sm font-semibold mt-auto group-hover:text-primary-300 transition-colors duration-300"
           initial={{ x: 0 }}
           animate={{ x: isHovered ? 8 : 0 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
+          transition={{ duration: 0.3, type: "spring", damping: 20, stiffness: 400 }}
           aria-hidden="true"
         >
-          View Details 
+          <span className="mr-2">Explore Project</span>
           <motion.div
             animate={{ x: isHovered ? 4 : 0 }}
-            transition={{ duration: 0.3, ease: "easeOut" }}
+            transition={{ duration: 0.3, type: "spring", damping: 20, stiffness: 400 }}
           >
-            <ChevronRight size={18} className="ml-1" />
+            <ChevronRight size={18} />
           </motion.div>
         </motion.div>
       </div>
@@ -216,16 +226,16 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
 
   return (
     <motion.div 
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-2 sm:p-4"
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6"
       style={{ 
-        backgroundColor: 'rgba(15, 23, 42, 0.95)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)' 
+        backgroundColor: 'rgba(15, 23, 42, 0.97)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)' 
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
+      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -233,16 +243,16 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
       aria-describedby="project-detail-description"
     >
       <motion.div 
-        className="bg-dark-600/95 backdrop-blur-sm rounded-2xl overflow-hidden max-w-4xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/30 shadow-2xl relative modal-content"
+        className="bg-dark-600/95 backdrop-blur-xl rounded-3xl overflow-hidden max-w-5xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/40 shadow-2xl relative modal-content"
         data-modal-content
-        initial={{ scale: 0.95, opacity: 0, y: 20 }}
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.95, opacity: 0, y: 20 }}
+        exit={{ scale: 0.9, opacity: 0, y: 20 }}
         transition={{ 
           type: "spring", 
           damping: 30, 
           stiffness: 400,
-          duration: 0.3
+          mass: 0.8
         }}
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -252,26 +262,35 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
           marginBottom: 'max(20px, env(safe-area-inset-bottom, 20px))'
         }}
       >
-        {/* Close button: ensure visible on all devices and not cropped */}
-        <button 
+        {/* Enhanced close button with better positioning */}
+        <motion.button 
           onClick={onClose}
-          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-full text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
+          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
           aria-label="Close project details"
           style={{
-            minWidth: '52px',
-            minHeight: '52px',
+            minWidth: '56px',
+            minHeight: '56px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            // Ensure button stays within safe area on mobile and is fully visible
             top: 'max(1rem, env(safe-area-inset-top, 1rem))',
             right: 'max(1rem, env(safe-area-inset-right, 1rem))'
           }}
+          whileHover={{ 
+            scale: 1.05,
+            rotate: 90,
+            transition: { type: "spring", damping: 20, stiffness: 400 }
+          }}
+          whileTap={{ 
+            scale: 0.95,
+            transition: { type: "spring", damping: 30, stiffness: 500 }
+          }}
         >
-          <X size={24} strokeWidth={3} />
-        </button>
+          <X size={24} strokeWidth={2} className="group-hover:text-red-100 transition-colors" />
+        </motion.button>
 
-        <div className="relative h-64 sm:h-80 overflow-hidden">
+        {/* Enhanced hero image section */}
+        <div className="relative h-72 sm:h-96 overflow-hidden">
           <img 
             src={project.image} 
             alt={project.title} 
@@ -279,63 +298,125 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             loading="lazy"
             decoding="async"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark-500 via-dark-500/60 to-transparent" aria-hidden="true"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-dark-500/90 via-dark-500/40 to-transparent" aria-hidden="true"></div>
           
-          <div className="absolute bottom-0 left-0 p-6">
-            <span className="px-3 py-1 bg-primary-500 text-white text-sm font-medium rounded-full mb-3 inline-block">
+          <motion.div 
+            className="absolute bottom-0 left-0 p-6 sm:p-8"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, type: "spring", damping: 25, stiffness: 400 }}
+          >
+            <motion.span 
+              className="px-4 py-2 bg-primary-500/90 backdrop-blur-sm text-white text-sm font-semibold rounded-full mb-4 inline-block border border-primary-400/30"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", damping: 20, stiffness: 400 }}
+            >
               {project.category}
-            </span>
-            <h2 id="project-detail-title" className="text-2xl sm:text-3xl font-bold text-white">{project.title}</h2>
-          </div>
+            </motion.span>
+            <h2 id="project-detail-title" className="text-3xl sm:text-4xl font-bold text-white">{project.title}</h2>
+          </motion.div>
         </div>
         
-        <div className="p-6 sm:p-8">
-          <div className="flex flex-wrap gap-2 mb-6" role="list" aria-label="Technologies used in this project">
-            {project.technologies.map((tech) => (
-              <span 
+        <div className="p-6 sm:p-8 lg:p-10">
+          {/* Enhanced technology tags */}
+          <motion.div 
+            className="flex flex-wrap gap-3 mb-8" 
+            role="list" 
+            aria-label="Technologies used in this project"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, type: "spring", damping: 25, stiffness: 400 }}
+          >
+            {project.technologies.map((tech, index) => (
+              <motion.span 
                 key={tech} 
-                className="px-3 py-1 bg-dark-500 text-primary-300 text-sm rounded-lg"
+                className="px-4 py-2 bg-dark-500/80 backdrop-blur-sm text-primary-300 text-sm font-medium rounded-xl border border-dark-400/30 hover:bg-primary-500/10 hover:border-primary-500/30 transition-all duration-200"
                 role="listitem"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4 + index * 0.05, type: "spring", damping: 25, stiffness: 400 }}
+                whileHover={{ scale: 1.05 }}
               >
                 {tech}
-              </span>
+              </motion.span>
             ))}
-          </div>
+          </motion.div>
           
-          <div className="mb-8">
-            <h3 className="text-xl font-bold mb-4 text-white">Description</h3>
-            <p id="project-detail-description" className="text-gray-300 leading-relaxed">
+          {/* Enhanced description section */}
+          <motion.div 
+            className="mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, type: "spring", damping: 25, stiffness: 400 }}
+          >
+            <h3 className="text-2xl font-bold mb-4 text-white flex items-center gap-3">
+              <span className="w-1 h-6 bg-primary-500 rounded-full"></span>
+              Project Overview
+            </h3>
+            <p id="project-detail-description" className="text-gray-300 leading-relaxed text-lg">
               {project.description}
             </p>
-          </div>
+          </motion.div>
           
-          <div className="mb-8">
-            <h3 className="text-xl font-bold mb-4 text-white">Key Features</h3>
-            <ul className="space-y-2" role="list">
+          {/* Enhanced features section */}
+          <motion.div 
+            className="mb-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, type: "spring", damping: 25, stiffness: 400 }}
+          >
+            <h3 className="text-2xl font-bold mb-6 text-white flex items-center gap-3">
+              <span className="w-1 h-6 bg-secondary-500 rounded-full"></span>
+              Key Features
+            </h3>
+            <ul className="space-y-4" role="list">
               {project.features.map((feature, index) => (
-                <li key={index} className="flex items-start" role="listitem">
-                  <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary-500/20 flex items-center justify-center mr-3 mt-0.5" aria-hidden="true">
+                <motion.li 
+                  key={index} 
+                  className="flex items-start gap-4 p-4 bg-dark-500/50 rounded-xl border border-dark-400/30 hover:border-primary-500/30 transition-all duration-200" 
+                  role="listitem"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.6 + index * 0.1, type: "spring", damping: 25, stiffness: 400 }}
+                  whileHover={{ x: 5 }}
+                >
+                  <span className="flex-shrink-0 h-6 w-6 rounded-full bg-primary-500/20 flex items-center justify-center mt-0.5" aria-hidden="true">
                     <span className="h-2 w-2 rounded-full bg-primary-500"></span>
                   </span>
-                  <span className="text-gray-300">{feature}</span>
-                </li>
+                  <span className="text-gray-300 leading-relaxed">{feature}</span>
+                </motion.li>
               ))}
             </ul>
-          </div>
+          </motion.div>
           
-          <div className="flex flex-col sm:flex-row gap-4" role="group" aria-label="Project links">
+          {/* Enhanced action buttons */}
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-4" 
+            role="group" 
+            aria-label="Project links"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7, type: "spring", damping: 25, stiffness: 400 }}
+          >
             {project.github && (
               <motion.a 
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-4 bg-dark-500 text-white rounded-lg font-medium hover:bg-dark-400 transition-all duration-200 touch-target apple-button"
-                whileHover={{ y: -3 }}
-                whileTap={{ y: 0 }}
+                className="flex items-center justify-center gap-3 px-8 py-4 bg-dark-500/80 backdrop-blur-sm text-white rounded-xl font-semibold hover:bg-dark-400 transition-all duration-200 touch-target border border-dark-400/50 hover:border-primary-500/30 group"
+                whileHover={{ 
+                  y: -3,
+                  boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
+                  transition: { type: "spring", damping: 20, stiffness: 400 }
+                }}
+                whileTap={{ 
+                  y: -1,
+                  transition: { type: "spring", damping: 30, stiffness: 500 }
+                }}
                 aria-label={`View source code for ${project.title} on GitHub`}
               >
-                <Github size={18} aria-hidden="true" />
-                View Code
+                <Github size={20} aria-hidden="true" className="group-hover:text-primary-400 transition-colors" />
+                <span>View Source Code</span>
               </motion.a>
             )}
             
@@ -344,22 +425,28 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
                 href={project.live}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 px-6 py-4 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition-all duration-200 touch-target apple-button"
-                whileHover={{ y: -3 }}
-                whileTap={{ y: 0 }}
+                className="flex items-center justify-center gap-3 px-8 py-4 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all duration-200 touch-target shadow-lg shadow-primary-500/25 group"
+                whileHover={{ 
+                  y: -3,
+                  boxShadow: "0 15px 35px -5px rgba(139, 92, 246, 0.4)",
+                  transition: { type: "spring", damping: 20, stiffness: 400 }
+                }}
+                whileTap={{ 
+                  y: -1,
+                  transition: { type: "spring", damping: 30, stiffness: 500 }
+                }}
                 aria-label={`View live demo of ${project.title}`}
               >
-                <ExternalLink size={18} aria-hidden="true" />
-                Live Demo
+                <ExternalLink size={20} aria-hidden="true" className="group-hover:rotate-12 transition-transform" />
+                <span>Live Demo</span>
               </motion.a>
             )}
-          </div>
+          </motion.div>
         </div>
       </motion.div>
     </motion.div>
   );
 });
-
 const Projects: React.FC = memo(() => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentCategory, setCurrentCategory] = useState<string>('All');

@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useScroll, useTransform, motion } from 'framer-motion';
+import { createOptimizedObserver } from '../../utils/performance';
 
 interface ParallaxSectionProps {
   children: React.ReactNode;
@@ -36,7 +37,9 @@ const ParallaxSection: React.FC<ParallaxSectionProps> = ({
 
   // Intersection observer for performance optimization
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    if (!ref.current) return;
+
+    const observer = createOptimizedObserver(
       ([entry]) => {
         setIsInView(entry.isIntersecting);
       },
@@ -46,10 +49,7 @@ const ParallaxSection: React.FC<ParallaxSectionProps> = ({
       }
     );
 
-    if (ref.current) {
-      observer.observe(ref.current);
-    }
-
+    observer.observe(ref.current);
     return () => observer.disconnect();
   }, []);
 

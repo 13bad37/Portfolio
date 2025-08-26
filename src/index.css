@@ -104,10 +104,28 @@ body {
   }
 }
 
-/* Apple-like micro interactions */
-/* 1) Underline slide for links */
+/* Apple-inspired micro interactions with enhanced physics-based curves */
+
+/* Apple's signature easing curves */
+:root {
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  
+  /* Apple's timing values */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-medium: 300ms;
+  --duration-slow: 500ms;
+  --duration-extra-slow: 700ms;
+}
+
+/* Enhanced underline slide for links with Apple's physics */
 .hover-underline {
   position: relative;
+  overflow: hidden;
 }
 .hover-underline::after {
   content: '';
@@ -119,29 +137,36 @@ body {
   background: linear-gradient(90deg, rgba(139,92,246,0.9), rgba(99,102,241,0.9));
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform var(--duration-medium) var(--ease-out-expo);
 }
 .hover-underline:hover::after {
   transform: scaleX(1);
 }
 
-/* 2) Subtle 3D tilt and zoom for media blocks */
+/* Enhanced 3D tilt and zoom with Apple's spring physics */
 .tilt-hover {
   transform-style: preserve-3d;
   perspective: 1000px;
-  transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform var(--duration-medium) var(--ease-out-back);
 }
 .tilt-hover:hover {
-  transform: perspective(1000px) rotateX(1.2deg) rotateY(-1.2deg);
-}
-.image-zoom img, .image-zoom > img, .image-zoom > picture img, .image-zoom > .lazy-image img {
-  transition: transform 500ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-.image-zoom:hover img, .image-zoom:hover > img, .image-zoom:hover > picture img, .image-zoom:hover > .lazy-image img {
-  transform: scale(1.06);
+  transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(10px);
 }
 
-/* 3) Enhanced heading style */
+.image-zoom img, 
+.image-zoom > img, 
+.image-zoom > picture img, 
+.image-zoom > .lazy-image img {
+  transition: transform var(--duration-extra-slow) var(--ease-out-expo);
+}
+.image-zoom:hover img, 
+.image-zoom:hover > img, 
+.image-zoom:hover > picture img, 
+.image-zoom:hover > .lazy-image img {
+  transform: scale(1.08);
+}
+
+/* Enhanced heading style with subtle glow */
 .heading-enhanced {
   letter-spacing: 0.01em;
   background: linear-gradient(90deg, #fff, #c7d2fe 30%, #a78bfa 60%, #fff 100%);
@@ -149,9 +174,125 @@ body {
   background-clip: text;
   color: transparent;
   text-shadow: 0 0 20px rgba(99, 102, 241, 0.08);
+  transition: filter var(--duration-medium) var(--ease-out-expo);
 }
 .heading-enhanced:hover {
-  filter: brightness(1.05);
+  filter: brightness(1.05) drop-shadow(0 0 10px rgba(139, 92, 246, 0.3));
+}
+
+/* Apple-inspired button interactions */
+.apple-button {
+  position: relative;
+  overflow: hidden;
+  transform: translate3d(0, 0, 0);
+  transition: all var(--duration-fast) var(--ease-out-expo);
+  will-change: transform, box-shadow;
+  backface-visibility: hidden;
+}
+
+.apple-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: transform var(--duration-slow) var(--ease-out-expo);
+  transform: skewX(-12deg);
+}
+
+.apple-button:hover::before {
+  transform: translateX(300%) skewX(-12deg);
+}
+
+.apple-button:hover {
+  transform: translate3d(0, -4px, 0) scale(1.02);
+  transition: all var(--duration-fast) var(--ease-out-back);
+}
+
+.apple-button:active {
+  transform: translate3d(0, -2px, 0) scale(0.98);
+  transition: all var(--duration-instant) var(--ease-out-expo);
+}
+
+/* Enhanced touch feedback for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .apple-button:hover {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  
+  .apple-button:active {
+    transform: scale(0.95);
+    transition: transform var(--duration-instant) var(--ease-out-expo);
+  }
+}
+
+/* Enhanced skill card animations with Apple's spring physics */
+.skill-card-hover {
+  transition: all var(--duration-medium) var(--ease-out-back);
+  transform-origin: center;
+  backface-visibility: hidden;
+}
+
+.skill-card-hover:hover {
+  transform: translateY(-6px) scale(1.02) rotateX(2deg);
+  box-shadow: 
+    0 20px 40px -10px rgba(139, 92, 246, 0.3),
+    0 8px 16px -4px rgba(0, 0, 0, 0.2);
+}
+
+.skill-card-active {
+  transform: translateY(-4px) scale(1.05) rotateX(1deg);
+  box-shadow: 
+    0 25px 50px -10px rgba(139, 92, 246, 0.4),
+    0 10px 20px -5px rgba(0, 0, 0, 0.25);
+}
+
+/* Apple-inspired animations using CSS custom properties */
+@keyframes apple-glow {
+  0%, 100% { 
+    opacity: 0.2; 
+    transform: scale(1) rotate(0deg); 
+  }
+  33% { 
+    opacity: 0.4; 
+    transform: scale(1.1) rotate(120deg); 
+  }
+  66% { 
+    opacity: 0.35;
+    transform: scale(1.05) rotate(240deg);
+  }
+}
+
+@keyframes apple-float {
+  0%, 100% { 
+    transform: translateY(0px) translateX(0px) rotate(0deg); 
+  }
+  25% { 
+    transform: translateY(-20px) translateX(10px) rotate(2deg); 
+  }
+  50% { 
+    transform: translateY(-10px) translateX(-10px) rotate(-1deg);
+  }
+  75% {
+    transform: translateY(15px) translateX(5px) rotate(1deg);
+  }
+}
+
+@keyframes bounce-gentle {
+  0%, 100% { 
+    transform: translateX(-50%) translateY(0);
+  }
+  25% { 
+    transform: translateX(-50%) translateY(-8px) scale(1.05);
+  }
+  50% { 
+    transform: translateX(-50%) translateY(4px) scale(0.98);
+  }
+  75% { 
+    transform: translateX(-50%) translateY(-2px) scale(1.02);
+  }
 }
 
 /* Mobile-friendly modal scroll prevention */
@@ -179,11 +320,131 @@ body {
   z-index: 10000;
 }
 
-/* Enhanced mobile touch interactions */
+/* Enhanced mobile touch interactions and responsiveness */
 @media (max-width: 768px) {
+  /* Perfect touch targets following Apple's HIG */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
+    padding: 8px;
+    border-radius: 8px;
+  }
+  
+  .touch-target-large {
+    min-height: 60px;
+    min-width: 60px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  /* Enhanced safe area support for modern mobile devices */
+  .safe-area-inset {
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+    padding-left: max(1rem, env(safe-area-inset-left, 1rem));
+    padding-right: max(1rem, env(safe-area-inset-right, 1rem));
+  }
+
+  .safe-area-top {
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem));
+  }
+
+  .safe-area-bottom {
+    padding-bottom: max(2rem, env(safe-area-inset-bottom, 2rem));
+  }
+
+  /* Optimized hover states for touch devices */
+  .smooth-hover:hover {
+    transform: none;
+  }
+
+  .apple-button:hover {
+    transform: translate3d(0, 0, 0) scale(1);
+    box-shadow: 0 8px 25px -8px rgba(139, 92, 246, 0.25);
+  }
+
+  .apple-button:active {
+    transform: scale(0.95);
+    transition: transform var(--duration-instant) var(--ease-out-expo);
+  }
+
+  /* Optimize animations for mobile performance */
+  .apple-glow,
+  .apple-float {
+    animation-duration: 6s;
+    animation-timing-function: var(--ease-out-expo);
+  }
+  
+  /* Enhanced mobile modal optimizations */
+  .modal-open-mobile {
+    width: 100% !important;
+    height: 100% !important;
+    -webkit-overflow-scrolling: auto;
+    overscroll-behavior: none;
+    touch-action: manipulation;
+  }
+  
+  /* Enhanced modal close button positioning */
+  .modal-close-button {
+    position: fixed !important;
+    top: max(1.5rem, env(safe-area-inset-top, 1.5rem)) !important;
+    right: max(1.5rem, env(safe-area-inset-right, 1.5rem)) !important;
+    z-index: 10001 !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+  }
+
+  /* Gesture-friendly interactions */
+  .gesture-enabled {
+    touch-action: pan-y pinch-zoom;
+  }
+
+  /* Improved text sizing for mobile readability */
+  .text-responsive {
+    font-size: clamp(0.875rem, 2vw, 1rem);
+    line-height: 1.6;
+  }
+
+  .heading-responsive {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  /* Enhanced mobile animations with performance focus */
+  .apple-animate,
+  .apple-scale {
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-out-expo);
+  }
+
+  /* Improved mobile scrolling behavior */
+  html {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
+  }
+
+  /* Mobile-specific focus states for accessibility */
+  button:focus,
+  a:focus,
+  input:focus,
+  textarea:focus {
+    outline: 2px solid rgba(139, 92, 246, 0.8);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* Enhanced mobile typography to prevent zoom */
+  body {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+
+  /* Optimize mobile performance by reducing complex animations */
+  .mobile-optimized {
+    will-change: auto;
+    transform: none;
+    animation: none;
   }
   
   .touch-target-large {
@@ -196,13 +457,6 @@ body {
   /* Disable hover effects on touch devices */
   .smooth-hover:hover {
     transform: none;
-  }
-
-  /* Optimize for mobile performance */
-  .mobile-optimized {
-    will-change: auto;
-    transform: none;
-    animation: none;
   }
   
   /* Mobile modal optimization */

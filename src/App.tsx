@@ -5,6 +5,7 @@ import HeroOptimized from './components/sections/HeroOptimized';
 import Loader from './components/animations/Loader';
 import ScrollProgress from './components/animations/ScrollProgress';
 import { getPerformanceManager } from './utils/performanceManager';
+import { trackWebVitals, getPerformanceGrade } from './utils/webVitals';
 
 // Lazy load heavy components
 const About = lazy(() => import('./components/sections/About'));
@@ -25,6 +26,20 @@ const App: React.FC = () => {
       optimizeForMobile: true
     });
 
+    // Initialize Core Web Vitals monitoring
+    const unsubscribeWebVitals = trackWebVitals((metric) => {
+      // Log metrics for monitoring (in production, send to analytics)
+      console.log(`${metric.name}: ${metric.value.toFixed(2)}ms`);
+      
+      // Report performance grade periodically
+      if (metric.name === 'LCP') {
+        setTimeout(() => {
+          const grade = getPerformanceGrade();
+          console.log('Performance Grade:', grade);
+        }, 1000);
+      }
+    });
+
     // Reduced loading time for faster initial render
     const timer = setTimeout(() => {
       setLoading(false);
@@ -34,7 +49,10 @@ const App: React.FC = () => {
       }, 500);
     }, 800); // Reduced from 2000ms to 800ms
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      unsubscribeWebVitals();
+    };
   }, []);
 
   return (

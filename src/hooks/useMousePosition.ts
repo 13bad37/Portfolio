@@ -12,14 +12,24 @@ export const useMousePosition = (): MousePosition => {
   });
 
   useEffect(() => {
+    let rafId: number | null = null;
+
     const updateMousePosition = (ev: MouseEvent) => {
-      setMousePosition({ x: ev.clientX, y: ev.clientY });
+      if (rafId) return; // Already scheduled
+      
+      rafId = requestAnimationFrame(() => {
+        setMousePosition({ x: ev.clientX, y: ev.clientY });
+        rafId = null;
+      });
     };
 
     window.addEventListener('mousemove', updateMousePosition);
 
     return () => {
       window.removeEventListener('mousemove', updateMousePosition);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
     };
   }, []);
 

@@ -16,7 +16,7 @@ const HeroOptimized: React.FC = memo(() => {
   return (
     <section 
       id="home" 
-      className="min-h-[100vh] flex flex-col justify-center relative overflow-hidden pt-20 sm:pt-16 apple-section content-auto" 
+      className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 sm:pt-16 apple-section content-auto safe-area-inset" 
       role="region" 
       aria-labelledby="hero-heading"
     >

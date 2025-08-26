@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { createOptimizedObserver } from '../../utils/performance';
 
 interface LazyImageProps {
   src: string;
@@ -25,7 +26,9 @@ const LazyImage: React.FC<LazyImageProps> = ({
   const imgRef = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
+    if (!imgRef.current) return;
+
+    const observer = createOptimizedObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           setInView(true);
@@ -38,10 +41,7 @@ const LazyImage: React.FC<LazyImageProps> = ({
       }
     );
 
-    if (imgRef.current) {
-      observer.observe(imgRef.current);
-    }
-
+    observer.observe(imgRef.current);
     return () => observer.disconnect();
   }, []);
 

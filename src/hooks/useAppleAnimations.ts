@@ -22,13 +22,24 @@ export const useAppleAnimation = ({
     const element = ref.current;
     if (!element) return;
 
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          const actualDelay = prefersReducedMotion ? 0 : delay;
+          
           setTimeout(() => {
             setIsVisible(true);
             element.classList.add('in-view');
-          }, delay);
+            
+            // Add Apple-inspired spring animation
+            element.style.transition = prefersReducedMotion 
+              ? 'none'
+              : `all 0.6s cubic-bezier(0.16, 1, 0.3, 1)`;
+            
+          }, actualDelay);
           
           if (triggerOnce) {
             observer.unobserve(element);
@@ -41,9 +52,21 @@ export const useAppleAnimation = ({
       { threshold, rootMargin }
     );
 
-    // Add initial animation class
+    // Enhanced animation classes with Apple's physics
     const animationClass = animationType === 'scale' ? 'apple-scale' : 'apple-animate';
     element.classList.add(animationClass);
+    
+    // Apply physics-based initial state
+    if (!prefersReducedMotion) {
+      element.style.transform = animationType === 'fade-up' 
+        ? 'translate3d(0, 30px, 0)' 
+        : animationType === 'scale'
+        ? 'scale3d(0.95, 0.95, 1)'
+        : animationType === 'slide-left'
+        ? 'translate3d(-30px, 0, 0)'
+        : 'translate3d(30px, 0, 0)';
+      element.style.opacity = '0';
+    }
 
     observer.observe(element);
 

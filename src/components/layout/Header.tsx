@@ -36,8 +36,20 @@ const Header: React.FC = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    // Use passive listener with throttling for better performance
+    let ticking = false;
+    const throttledScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', throttledScroll, { passive: true });
+    return () => window.removeEventListener('scroll', throttledScroll);
   }, []);
 
   useEffect(() => {
@@ -58,25 +70,73 @@ const Header: React.FC = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
+  // Enhanced Apple-inspired animation variants
   const headerVariants = {
     initial: { y: -100, opacity: 0 },
-    animate: { y: 0, opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+    animate: { 
+      y: 0, 
+      opacity: 1, 
+      transition: { 
+        type: "spring",
+        damping: 25,
+        stiffness: 400,
+        mass: 0.8
+      } 
+    },
   };
 
   const menuVariants = {
-    closed: { opacity: 0, x: '100%' },
-    open: { opacity: 1, x: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+    closed: { 
+      opacity: 0, 
+      x: '100%',
+      transition: {
+        type: "spring",
+        damping: 30,
+        stiffness: 400
+      }
+    },
+    open: { 
+      opacity: 1, 
+      x: 0, 
+      transition: { 
+        type: "spring",
+        damping: 25,
+        stiffness: 400,
+        mass: 0.8
+      } 
+    },
+  };
+
+  // Enhanced smooth scroll function
+  const smoothScrollTo = (href: string) => {
+    const element = document.querySelector(href);
+    if (element) {
+      const headerHeight = 80;
+      const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - headerHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
   };
 
   return (
     <motion.header
-      className={`fixed top-0 left-0 right-0 z-50 will-change-transform ${
-        isScrolled ? 'bg-dark-500/80 backdrop-blur-md py-2 shadow-md' : 'bg-transparent py-4'
+      className={`fixed top-0 left-0 right-0 z-50 will-change-transform transition-all duration-300 ease-out ${
+        isScrolled 
+          ? 'bg-dark-500/95 backdrop-blur-xl py-3 shadow-lg border-b border-dark-400/30' 
+          : 'bg-transparent py-4'
       }`}
       variants={headerVariants}
       initial="initial"
-      animate={isHiddenForModal ? { y: -100, opacity: 0, zIndex: -1 } : 'animate'}
-      transition={{ duration: 0.18, ease: [0.2, 0.8, 0.2, 1] }}
+      animate={isHiddenForModal ? { 
+        y: -100, 
+        opacity: 0, 
+        zIndex: -1,
+        transition: { type: "spring", damping: 30, stiffness: 400 }
+      } : 'animate'}
       role="banner"
       aria-label="Site header"
     >
@@ -84,34 +144,48 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center">
           <motion.a
             href="#home"
-            className="flex items-center gap-2 text-white font-bold text-xl md:text-2xl font-mono"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 text-white font-bold text-xl md:text-2xl font-mono touch-target"
+            whileHover={{ 
+              scale: 1.05,
+              transition: { type: "spring", damping: 20, stiffness: 300 }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { type: "spring", damping: 30, stiffness: 400 }
+            }}
+            onClick={(e) => {
+              e.preventDefault();
+              smoothScrollTo('#home');
+            }}
             aria-label="Nonso Nkire - Software Engineer, go to home section"
           >
             <Code2 className="text-primary-500" />
             <span>nonso<span className="text-primary-500">.</span>software</span>
           </motion.a>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Enhanced */}
           <nav className="hidden md:flex items-center gap-8" role="navigation" aria-label="Main navigation">
             {navItems.map((item) => (
               <motion.a
                 key={item.name}
                 href={item.href}
-                className={`relative px-1 py-2 font-medium transition-colors hover-underline ${
+                className={`relative px-3 py-2 font-medium transition-all duration-200 hover-underline touch-target ${
                   activeSection === item.href.substring(1)
                     ? 'text-primary-400'
                     : 'text-gray-300 hover:text-white'
                 }`}
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
+                whileHover={{ 
+                  y: -2,
+                  transition: { type: "spring", damping: 20, stiffness: 400 }
+                }}
+                whileTap={{ 
+                  y: 0,
+                  transition: { type: "spring", damping: 30, stiffness: 500 }
+                }}
                 aria-current={activeSection === item.href.substring(1) ? 'page' : undefined}
                 onClick={(e) => {
                   e.preventDefault();
-                  document.querySelector(item.href)?.scrollIntoView({
-                    behavior: 'smooth',
-                  });
+                  smoothScrollTo(item.href);
                 }}
               >
                 {item.name}
@@ -119,9 +193,12 @@ const Header: React.FC = () => {
                   <motion.span
                     className="absolute bottom-0 left-0 h-0.5 bg-primary-500 w-full"
                     layoutId="underline"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scaleX: 1,
+                      transition: { type: "spring", damping: 25, stiffness: 400 }
+                    }}
                     aria-hidden="true"
                   />
                 )}
@@ -129,61 +206,69 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Social Links */}
+          {/* Enhanced Social Links */}
           <div className="hidden md:flex items-center gap-4" role="complementary" aria-label="Social media links">
-            <motion.a
-              href="https://github.com/13bad37"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ y: -2, color: '#6366F1' }}
-              whileTap={{ y: 0 }}
-              className="text-gray-300 hover:text-white transition-colors"
-              aria-label="GitHub"
-            >
-              <Github size={20} />
-            </motion.a>
-            <motion.a
-              href="https://www.linkedin.com/in/nonso-nkire-1578122a7/"
-              target="_blank"
-              rel="noopener noreferrer"
-              whileHover={{ y: -2, color: '#6366F1' }}
-              whileTap={{ y: 0 }}
-              className="text-gray-300 hover:text-white transition-colors"
-              aria-label="LinkedIn"
-            >
-              <Linkedin size={20} />
-            </motion.a>
-            <motion.a
-              href="mailto:nonsognkire@gmail.com"
-              whileHover={{ y: -2, color: '#6366F1' }}
-              whileTap={{ y: 0 }}
-              className="text-gray-300 hover:text-white transition-colors"
-              aria-label="Email"
-            >
-              <Mail size={20} />
-            </motion.a>
+            {[
+              { href: "https://github.com/13bad37", icon: Github, label: "GitHub", color: "#6366F1" },
+              { href: "https://www.linkedin.com/in/nonso-nkire-1578122a7/", icon: Linkedin, label: "LinkedIn", color: "#3B82F6" },
+              { href: "mailto:nonsognkire@gmail.com", icon: Mail, label: "Email", color: "#8B5CF6" }
+            ].map((social) => (
+              <motion.a
+                key={social.label}
+                href={social.href}
+                target={social.href.startsWith('http') ? '_blank' : undefined}
+                rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                whileHover={{ 
+                  y: -3, 
+                  scale: 1.1,
+                  color: social.color,
+                  transition: { type: "spring", damping: 20, stiffness: 400 }
+                }}
+                whileTap={{ 
+                  y: -1,
+                  scale: 0.95,
+                  transition: { type: "spring", damping: 30, stiffness: 500 }
+                }}
+                className="text-gray-300 hover:text-white transition-colors touch-target p-2 rounded-lg"
+                aria-label={social.label}
+              >
+                <social.icon size={20} />
+              </motion.a>
+            ))}
           </div>
 
-          {/* Mobile Menu Button */}
+          {/* Enhanced Mobile Menu Button */}
           <motion.button
             onClick={toggleMenu}
-            className="md:hidden text-white p-2"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+            className="md:hidden text-white p-3 rounded-xl hover:bg-white/10 transition-colors touch-target-large"
+            whileHover={{ 
+              scale: 1.05,
+              backgroundColor: "rgba(255, 255, 255, 0.1)",
+              transition: { type: "spring", damping: 20, stiffness: 400 }
+            }}
+            whileTap={{ 
+              scale: 0.95,
+              transition: { type: "spring", damping: 30, stiffness: 500 }
+            }}
             aria-label="Toggle mobile navigation menu"
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
           >
-            <Menu size={24} />
+            <motion.div
+              animate={isMenuOpen ? { rotate: 180 } : { rotate: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 400 }}
+            >
+              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </motion.div>
           </motion.button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Enhanced Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            className="fixed inset-0 bg-dark-500 z-[60] md:hidden"
+            className="fixed inset-0 bg-dark-500/98 backdrop-blur-xl z-[60] md:hidden"
             variants={menuVariants}
             initial="closed"
             animate="open"
@@ -192,14 +277,24 @@ const Header: React.FC = () => {
             role="navigation"
             aria-label="Mobile navigation menu"
           >
-            <div className="flex flex-col h-full p-6">
-              <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col h-full p-6 safe-area-inset">
+              <div className="flex justify-between items-center mb-12">
                 <motion.a
                   href="#home"
-                  className="flex items-center gap-2 text-white font-bold text-xl font-mono"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-2 text-white font-bold text-xl font-mono touch-target"
+                  whileHover={{ 
+                    scale: 1.05,
+                    transition: { type: "spring", damping: 20, stiffness: 300 }
+                  }}
+                  whileTap={{ 
+                    scale: 0.95,
+                    transition: { type: "spring", damping: 30, stiffness: 400 }
+                  }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    smoothScrollTo('#home');
+                    setIsMenuOpen(false);
+                  }}
                   aria-label="Nonso Nkire - Software Engineer, go to home section"
                 >
                   <Code2 className="text-primary-500" />
@@ -207,33 +302,57 @@ const Header: React.FC = () => {
                 </motion.a>
                 <motion.button
                   onClick={toggleMenu}
-                  className="text-white p-2"
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
+                  className="text-white p-3 rounded-xl hover:bg-white/10 transition-colors touch-target-large"
+                  whileHover={{ 
+                    scale: 1.05,
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                    transition: { type: "spring", damping: 20, stiffness: 400 }
+                  }}
+                  whileTap={{ 
+                    scale: 0.95,
+                    transition: { type: "spring", damping: 30, stiffness: 500 }
+                  }}
                   aria-label="Close mobile navigation menu"
                 >
                   <X size={24} />
                 </motion.button>
               </div>
 
-              <nav className="flex flex-col gap-4 mb-8">
-                {navItems.map((item) => (
+              <nav className="flex flex-col gap-2 mb-12 flex-1">
+                {navItems.map((item, index) => (
                   <motion.a
                     key={item.name}
                     href={item.href}
-                    className={`text-lg font-medium px-4 py-3 rounded-lg transition-colors ${
+                    className={`text-lg font-medium px-6 py-4 rounded-xl transition-all duration-200 touch-target ${
                       activeSection === item.href.substring(1)
-                        ? 'bg-primary-500/20 text-primary-400'
-                        : 'text-gray-300 hover:bg-dark-400 hover:text-white'
+                        ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30' 
+                        : 'text-gray-300 hover:bg-white/10 hover:text-white'
                     }`}
-                    whileHover={{ x: 5 }}
-                    whileTap={{ x: 0 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ 
+                      opacity: 1, 
+                      x: 0,
+                      transition: { 
+                        delay: index * 0.1,
+                        type: "spring", 
+                        damping: 25, 
+                        stiffness: 400 
+                      }
+                    }}
+                    whileHover={{ 
+                      x: 8,
+                      scale: 1.02,
+                      transition: { type: "spring", damping: 20, stiffness: 400 }
+                    }}
+                    whileTap={{ 
+                      x: 4,
+                      scale: 0.98,
+                      transition: { type: "spring", damping: 30, stiffness: 500 }
+                    }}
                     aria-current={activeSection === item.href.substring(1) ? 'page' : undefined}
                     onClick={(e) => {
                       e.preventDefault();
-                      document.querySelector(item.href)?.scrollIntoView({
-                        behavior: 'smooth',
-                      });
+                      smoothScrollTo(item.href);
                       setIsMenuOpen(false);
                     }}
                   >
@@ -242,39 +361,55 @@ const Header: React.FC = () => {
                 ))}
               </nav>
 
-              <div className="flex justify-center gap-8 mt-auto mb-8" role="complementary" aria-label="Social media links">
-                <motion.a
-                  href="https://github.com/13bad37"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ y: -2, color: '#6366F1' }}
-                  whileTap={{ y: 0 }}
-                  className="text-gray-300 hover:text-white transition-colors"
-                  aria-label="GitHub"
-                >
-                  <Github size={24} />
-                </motion.a>
-                <motion.a
-                  href="https://www.linkedin.com/in/nonso-nkire-1578122a7/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ y: -2, color: '#6366F1' }}
-                  whileTap={{ y: 0 }}
-                  className="text-gray-300 hover:text-white transition-colors"
-                  aria-label="LinkedIn"
-                >
-                  <Linkedin size={24} />
-                </motion.a>
-                <motion.a
-                  href="mailto:nonsognkire@gmail.com"
-                  whileHover={{ y: -2, color: '#6366F1' }}
-                  whileTap={{ y: 0 }}
-                  className="text-gray-300 hover:text-white transition-colors"
-                  aria-label="Email"
-                >
-                  <Mail size={24} />
-                </motion.a>
-              </div>
+              <motion.div 
+                className="flex justify-center gap-8 mt-auto mb-8 safe-area-bottom" 
+                role="complementary" 
+                aria-label="Social media links"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ 
+                  opacity: 1, 
+                  y: 0,
+                  transition: { delay: 0.6, type: "spring", damping: 25, stiffness: 400 }
+                }}
+              >
+                {[
+                  { href: "https://github.com/13bad37", icon: Github, label: "GitHub" },
+                  { href: "https://www.linkedin.com/in/nonso-nkire-1578122a7/", icon: Linkedin, label: "LinkedIn" },
+                  { href: "mailto:nonsognkire@gmail.com", icon: Mail, label: "Email" }
+                ].map((social, index) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target={social.href.startsWith('http') ? '_blank' : undefined}
+                    rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ 
+                      opacity: 1, 
+                      scale: 1,
+                      transition: { 
+                        delay: 0.7 + index * 0.1,
+                        type: "spring", 
+                        damping: 25, 
+                        stiffness: 400 
+                      }
+                    }}
+                    whileHover={{ 
+                      y: -3, 
+                      scale: 1.1,
+                      transition: { type: "spring", damping: 20, stiffness: 400 }
+                    }}
+                    whileTap={{ 
+                      y: -1,
+                      scale: 0.95,
+                      transition: { type: "spring", damping: 30, stiffness: 500 }
+                    }}
+                    className="text-gray-300 hover:text-primary-400 transition-colors p-3 rounded-xl hover:bg-primary-500/10 touch-target-large"
+                    aria-label={social.label}
+                  >
+                    <social.icon size={28} />
+                  </motion.a>
+                ))}
+              </motion.div>
             </div>
           </motion.div>
         )}
