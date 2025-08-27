@@ -204,14 +204,25 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
 });
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(({ project, onClose }) => {
+  const [isClosing, setIsClosing] = React.useState(false);
+  
+  // Instant close handler with no animations or delays
+  const handleClose = React.useCallback(() => {
+    if (isClosing) return;
+    
+    setIsClosing(true);
+    
+    // Immediate close - no delays or animations
+    modalScrollManager.unlock();
+    onClose();
+  }, [onClose, isClosing]);
+
   React.useEffect(() => {
-    // Enhanced scroll lock with better mobile handling
     modalScrollManager.lock();
     
-    // Comprehensive keyboard handling for accessibility
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        onClose();
+        handleClose();
       }
     };
     
@@ -219,58 +230,45 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
-      // Ensure scroll is properly restored on cleanup
-      modalScrollManager.unlock();
-      try {
-        window.dispatchEvent(new CustomEvent('project:close'));
-      } catch {
-        // Event dispatch failed
+      // Emergency cleanup only if component unmounts unexpectedly
+      if (!isClosing) {
+        modalScrollManager.unlock();
       }
     };
-  }, [onClose]);
+  }, [handleClose, isClosing]);
 
   return (
-    <motion.div 
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-3 sm:p-6"
+    <div 
+      className="fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6 lg:p-8"
       style={{ 
         backgroundColor: 'rgba(15, 23, 42, 0.97)',
         backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)' 
+        WebkitBackdropFilter: 'blur(20px)',
+        minHeight: '100vh',
+        minWidth: '100vw'
       }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
-      onClick={onClose}
+      onClick={handleClose}
       role="dialog"
       aria-modal="true"
       aria-labelledby="project-detail-title"
       aria-describedby="project-detail-description"
     >
-      <motion.div 
-        className="bg-dark-600/95 backdrop-blur-xl rounded-3xl overflow-hidden max-w-5xl w-full max-h-[90vh] sm:max-h-[85vh] overflow-y-auto border border-dark-400/40 shadow-2xl relative modal-content"
+      <div 
+        className="bg-dark-600/95 backdrop-blur-xl rounded-3xl overflow-hidden w-full overflow-y-auto border border-dark-400/40 shadow-2xl relative modal-content"
         data-modal-content
-        initial={{ scale: 0.9, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        transition={{ 
-          type: "spring", 
-          damping: 30, 
-          stiffness: 400,
-          mass: 0.8
-        }}
         onClick={(e) => e.stopPropagation()}
         style={{
           scrollbarWidth: 'thin',
           scrollbarColor: '#8b5cf6 transparent',
-          marginTop: 'max(60px, env(safe-area-inset-top, 60px))',
-          marginBottom: 'max(20px, env(safe-area-inset-bottom, 20px))'
+          maxWidth: 'min(90vw, 1200px)',
+          maxHeight: 'min(90vh, 800px)',
+          margin: 'auto'
         }}
       >
-        {/* Enhanced close button with better positioning */}
-        <motion.button 
-          onClick={onClose}
-          className="fixed top-6 right-6 z-[100000] p-3 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large group"
+        {/* Enhanced close button with modal-relative positioning - no animations */}
+        <button 
+          onClick={handleClose}
+          className="absolute z-[10] p-3 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-colors duration-100 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
           aria-label="Close project details"
           style={{
             minWidth: '48px',
@@ -278,21 +276,12 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            top: 'max(1.5rem, env(safe-area-inset-top, 1.5rem))',
-            right: 'max(1.5rem, env(safe-area-inset-right, 1.5rem))'
-          }}
-          whileHover={{ 
-            scale: 1.05,
-            rotate: 90,
-            transition: { type: "spring", damping: 20, stiffness: 400 }
-          }}
-          whileTap={{ 
-            scale: 0.95,
-            transition: { type: "spring", damping: 30, stiffness: 500 }
+            top: '1rem',
+            right: '1rem'
           }}
         >
-          <X size={20} strokeWidth={2} className="group-hover:text-red-100 transition-colors" />
-        </motion.button>
+          <X size={20} strokeWidth={2} className="transition-colors" />
+        </button>
 
         {/* Enhanced hero image section */}
         <div className="relative h-72 sm:h-96 overflow-hidden">
@@ -448,8 +437,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             )}
           </motion.div>
         </div>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 });
 const Projects: React.FC = memo(() => {
@@ -588,26 +577,14 @@ const Projects: React.FC = memo(() => {
       
       <AnimatedDivider type="dots" />
 
-      <AnimatePresence mode="wait">
-        {selectedProject && (
-          <Portal>
-            <ProjectDetail 
-              project={selectedProject} 
-              onClose={() => {
-                setSelectedProject(null);
-                // Add a small delay to prevent rubber banding
-                setTimeout(() => {
-                  try {
-                    window.dispatchEvent(new CustomEvent('modal:cleanup'));
-                  } catch {
-                    // Event dispatch failed
-                  }
-                }, 300);
-              }} 
-            />
-          </Portal>
-        )}
-      </AnimatePresence>
+      {selectedProject && (
+        <Portal>
+          <ProjectDetail 
+            project={selectedProject} 
+            onClose={() => setSelectedProject(null)} 
+          />
+        </Portal>
+      )}
     </section>
   );
 });

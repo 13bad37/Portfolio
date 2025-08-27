@@ -14,6 +14,8 @@ export default defineConfig({
     cssMinify: 'esbuild',
     reportCompressedSize: true,
     chunkSizeWarningLimit: 1000,
+    sourcemap: false, // Disable sourcemaps for production
+    cssCodeSplit: true, // Enable CSS code splitting
     rollupOptions: {
       output: {
         manualChunks: {

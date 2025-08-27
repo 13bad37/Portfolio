@@ -2,9 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Performance optimizations */
+/* Critical performance optimizations */
 * {
   box-sizing: border-box;
+}
+
+/* Reduce paint complexity */
+*,
+*::before,
+*::after {
+  will-change: auto;
 }
 
 html {
@@ -14,16 +21,10 @@ html {
   overflow-x: hidden;
 }
 
-/* Enhanced smooth scrolling for better transitions */
+/* Enhanced smooth scrolling - user controlled (no snap) */
 @supports (scroll-behavior: smooth) {
   html {
     scroll-behavior: smooth;
-    scroll-snap-type: y proximity;
-  }
-  
-  section {
-    scroll-snap-align: start;
-    scroll-snap-stop: normal;
   }
 }
 
@@ -36,12 +37,27 @@ body {
   font-display: swap;
 }
 
-/* GPU acceleration for smooth animations */
+/* Optimized GPU acceleration */
 .gpu-accelerated {
-  transform: translateZ(0);
+  transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
   will-change: transform;
+}
+
+/* Performance-first animation classes */
+.optimized-transform {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+}
+
+.optimized-opacity {
+  will-change: opacity;
+}
+
+.performance-animation {
+  animation-fill-mode: both;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -249,34 +265,24 @@ body {
     0 10px 20px -5px rgba(0, 0, 0, 0.25);
 }
 
-/* Apple-inspired animations using CSS custom properties */
+/* Optimized animations with performance focus */
 @keyframes apple-glow {
   0%, 100% { 
     opacity: 0.2; 
-    transform: scale(1) rotate(0deg); 
+    transform: translate3d(0, 0, 0) scale(1); 
   }
-  33% { 
+  50% { 
     opacity: 0.4; 
-    transform: scale(1.1) rotate(120deg); 
-  }
-  66% { 
-    opacity: 0.35;
-    transform: scale(1.05) rotate(240deg);
+    transform: translate3d(0, 0, 0) scale(1.05); 
   }
 }
 
 @keyframes apple-float {
   0%, 100% { 
-    transform: translateY(0px) translateX(0px) rotate(0deg); 
-  }
-  25% { 
-    transform: translateY(-20px) translateX(10px) rotate(2deg); 
+    transform: translate3d(0, 0, 0); 
   }
   50% { 
-    transform: translateY(-10px) translateX(-10px) rotate(-1deg);
-  }
-  75% {
-    transform: translateY(15px) translateX(5px) rotate(1deg);
+    transform: translate3d(0, -10px, 0); 
   }
 }
 
@@ -295,17 +301,26 @@ body {
   }
 }
 
-/* Mobile-friendly modal scroll prevention */
+/* Enhanced modal scroll prevention with anti-rubber-band measures */
 .modal-open-mobile {
   overflow: hidden !important;
   position: relative !important;
   height: 100vh !important;
+  /* Prevent iOS rubber band scrolling */
+  -webkit-overflow-scrolling: touch !important;
+  overscroll-behavior: none !important;
 }
 
 .modal-open-desktop {
   overflow: hidden !important;
   position: fixed !important;
   width: 100% !important;
+  /* Critical: Prevent scroll restoration conflicts */
+  scroll-behavior: auto !important;
+  overscroll-behavior: none !important;
+  /* Ensure consistent rendering across browsers */
+  -webkit-transform: translateZ(0) !important;
+  transform: translateZ(0) !important;
 }
 
 /* Enhanced touch targets for mobile accessibility */
@@ -470,6 +485,84 @@ body {
     top: max(1rem, env(safe-area-inset-top, 1rem)) !important;
     right: max(1rem, env(safe-area-inset-right, 1rem)) !important;
     z-index: 10001 !important;
+  }
+}
+
+/* Desktop-specific modal close button positioning to prevent cropping */
+@media (min-width: 769px) {
+  .modal-close-button {
+    position: fixed !important;
+    top: 2rem !important;
+    right: 2rem !important;
+    z-index: 100001 !important;
+    /* Ensure button is fully visible and not cropped */
+    min-width: 56px !important;
+    min-height: 56px !important;
+    /* Add extra margin from edges to prevent clipping */
+    margin-top: 0 !important;
+    margin-right: 0 !important;
+    /* Ensure button stays within viewport boundaries */
+    max-width: calc(100vw - 4rem) !important;
+    max-height: calc(100vh - 4rem) !important;
+  }
+  
+  /* Prevent close button from being hidden behind other elements */
+  .modal-close-button {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  
+  /* Ensure adequate spacing from viewport edges */
+  .modal-content {
+    padding-top: 5rem;
+    padding-right: 5rem;
+  }
+  
+  /* Prevent any overflow issues that could cause cropping */
+  .modal-backdrop {
+    overflow: visible !important;
+  }
+}
+
+/* Additional safety for all screen sizes */
+.modal-close-button {
+  /* Ensure button is always visible and accessible */
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+/* Anti-rubber-band CSS fallbacks for edge cases */
+html.modal-active,
+body.modal-active {
+  /* Backup scroll prevention */
+  overflow: hidden !important;
+  position: fixed !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Browser-specific scroll prevention */
+@supports (-webkit-overflow-scrolling: touch) {
+  .modal-open-desktop {
+    -webkit-overflow-scrolling: auto !important;
+  }
+}
+
+/* Firefox-specific smooth scroll override */
+@-moz-document url-prefix() {
+  html.modal-open-desktop {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Safari-specific fixes */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    .modal-open-desktop {
+      -webkit-backface-visibility: hidden !important;
+      backface-visibility: hidden !important;
+    }
   }
 }
 
@@ -671,8 +764,7 @@ body {
 }
 
 .apple-section {
-  scroll-snap-align: start;
-  scroll-snap-stop: normal;
+  /* Removed scroll-snap for user control */
 }
 
 /* Intersection Observer triggered animations */
@@ -768,12 +860,11 @@ body {
   background: rgba(139, 92, 246, 0.8);
 }
 
-/* Smooth scrolling enhancements */
+/* Smooth scrolling enhancements - user controlled */
 @supports (scroll-behavior: smooth) {
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 80px;
-    scroll-snap-type: y proximity;
   }
 }
 

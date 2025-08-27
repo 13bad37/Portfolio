@@ -1,10 +1,13 @@
-// Enhanced modal scroll management with mobile-first approach
+// Enhanced modal scroll management with anti-rubber-band desktop solution
 class ModalScrollManager {
   private originalScrollY: number = 0;
   private isLocked: boolean = false;
   private isMobile: boolean = false;
   private touchStartY: number = 0;
   private preventTouch: boolean = false;
+  private isUnlocking: boolean = false;
+  private restoreTimer: number | null = null;
+  private scrollbarWidth: number = 0;
 
   constructor() {
     this.isMobile = this.detectMobile();
@@ -24,16 +27,23 @@ class ModalScrollManager {
   }
 
   lock(): void {
-    if (this.isLocked) return;
+    if (this.isLocked || this.isUnlocking) return;
 
-    this.originalScrollY = window.pageYOffset;
+    // Clear any pending restore operations
+    if (this.restoreTimer) {
+      clearTimeout(this.restoreTimer);
+      this.restoreTimer = null;
+    }
+
+    // Store scroll position with multiple fallbacks
+    this.originalScrollY = this.getScrollPosition();
+    this.scrollbarWidth = this.getScrollbarWidth();
     this.isLocked = true;
+    this.isUnlocking = false;
 
     if (this.isMobile) {
-      // Mobile-specific scroll prevention
       this.lockMobile();
     } else {
-      // Desktop scroll prevention
       this.lockDesktop();
     }
   }
@@ -65,38 +75,50 @@ class ModalScrollManager {
   }
 
   private lockDesktop(): void {
-    // Desktop approach with position fixed
-    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+    const body = document.body;
+    const html = document.documentElement;
     
-    document.body.style.overflow = 'hidden';
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${this.originalScrollY}px`;
-    document.body.style.left = '0';
-    document.body.style.right = '0';
-    document.body.style.width = '100%';
+    // Enhanced desktop scroll lock with rubber-band prevention
+    body.style.setProperty('overflow', 'hidden', 'important');
+    body.style.setProperty('position', 'fixed', 'important');
+    body.style.setProperty('top', `-${this.originalScrollY}px`, 'important');
+    body.style.setProperty('left', '0', 'important');
+    body.style.setProperty('right', '0', 'important');
+    body.style.setProperty('width', '100%', 'important');
     
-    // Compensate for scrollbar width to prevent layout shift
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    // Prevent layout shift with scrollbar compensation
+    if (this.scrollbarWidth > 0) {
+      body.style.setProperty('padding-right', `${this.scrollbarWidth}px`, 'important');
     }
 
-    // Prevent wheel and keyboard scrolling
+    // Additional stability measures
+    html.style.setProperty('overflow', 'hidden', 'important');
+    html.style.setProperty('scroll-behavior', 'auto', 'important');
+    
+    // Prevent all scroll-related events
     document.addEventListener('wheel', this.handleWheel, { passive: false });
     document.addEventListener('keydown', this.handleKeydown, { passive: false });
+    document.addEventListener('scroll', this.handleScroll, { passive: false });
     
-    document.body.classList.add('modal-open-desktop');
+    body.classList.add('modal-open-desktop');
   }
 
   unlock(): void {
-    if (!this.isLocked) return;
+    if (!this.isLocked || this.isUnlocking) return;
+
+    this.isUnlocking = true;
+
+    // Clear any existing restore timer
+    if (this.restoreTimer) {
+      clearTimeout(this.restoreTimer);
+      this.restoreTimer = null;
+    }
 
     if (this.isMobile) {
       this.unlockMobile();
     } else {
       this.unlockDesktop();
     }
-
-    this.isLocked = false;
   }
 
   private unlockMobile(): void {
@@ -123,26 +145,35 @@ class ModalScrollManager {
   }
 
   private unlockDesktop(): void {
-    document.body.style.overflow = '';
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.left = '';
-    document.body.style.right = '';
-    document.body.style.width = '';
-    document.body.style.paddingRight = '';
-    
+    const body = document.body;
+    const html = document.documentElement;
+    const targetScrollY = this.originalScrollY;
+
+    // Phase 1: Remove event listeners immediately to prevent conflicts
     document.removeEventListener('wheel', this.handleWheel);
     document.removeEventListener('keydown', this.handleKeydown);
+    document.removeEventListener('scroll', this.handleScroll);
     
-    document.body.classList.remove('modal-open-desktop');
-    
-    // Gentler scroll restoration to prevent rubber banding
-    requestAnimationFrame(() => {
-      window.scrollTo({ 
-        top: this.originalScrollY, 
-        behavior: 'auto' 
-      });
-    });
+    // Phase 2: Coordinated style restoration with precise timing
+    this.restoreTimer = window.setTimeout(() => {
+      // Step 1: Clear all positioning styles
+      body.style.removeProperty('overflow');
+      body.style.removeProperty('position');
+      body.style.removeProperty('top');
+      body.style.removeProperty('left');
+      body.style.removeProperty('right');
+      body.style.removeProperty('width');
+      body.style.removeProperty('padding-right');
+      
+      html.style.removeProperty('overflow');
+      html.style.removeProperty('scroll-behavior');
+      
+      body.classList.remove('modal-open-desktop');
+      
+      // Step 2: Smooth scroll restoration with fallbacks
+      this.restoreScrollPosition(targetScrollY);
+      
+    }, 50); // Small delay to ensure DOM stability
   }
 
   private handleTouchStart(e: TouchEvent): void {
@@ -207,6 +238,64 @@ class ModalScrollManager {
       if (!modalContent) {
         e.preventDefault();
       }
+    }
+  }
+
+  private handleScroll = (e: Event): void => {
+    // Prevent any scroll events during modal lock
+    if (this.isLocked && !this.isUnlocking) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  };
+
+  private getScrollPosition(): number {
+    return window.pageYOffset || 
+           document.documentElement.scrollTop || 
+           document.body.scrollTop || 
+           0;
+  }
+
+  private getScrollbarWidth(): number {
+    return window.innerWidth - document.documentElement.clientWidth;
+  }
+
+  private restoreScrollPosition(targetY: number): void {
+    // Multi-phase scroll restoration to prevent rubber banding
+    
+    // Phase 1: Instant restoration without animation
+    window.scrollTo(0, targetY);
+    
+    // Phase 2: Verify and correct if needed
+    const verifyTimer = window.setTimeout(() => {
+      const currentScroll = this.getScrollPosition();
+      
+      if (Math.abs(currentScroll - targetY) > 5) {
+        // Fallback restoration with RAF for smoothness
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: targetY,
+            behavior: 'auto'
+          });
+          
+          // Final verification
+          requestAnimationFrame(() => {
+            this.finalizeUnlock();
+          });
+        });
+      } else {
+        this.finalizeUnlock();
+      }
+    }, 100);
+  }
+
+  private finalizeUnlock(): void {
+    this.isLocked = false;
+    this.isUnlocking = false;
+    
+    if (this.restoreTimer) {
+      clearTimeout(this.restoreTimer);
+      this.restoreTimer = null;
     }
   }
 

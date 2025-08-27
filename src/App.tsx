@@ -40,14 +40,18 @@ const App: React.FC = () => {
       }
     });
 
-    // Reduced loading time for faster initial render
+    // Faster loading time for better LCP
     const timer = setTimeout(() => {
       setLoading(false);
+      // Preload critical components
+      About.preload?.();
+      Skills.preload?.();
+      Projects.preload?.();
       // Optimize memory after initial load
       setTimeout(() => {
         performanceManager.optimizeMemory();
-      }, 500);
-    }, 800); // Reduced from 2000ms to 800ms
+      }, 300);
+    }, 300); // Further reduced to 300ms for better FCP/LCP
 
     return () => {
       clearTimeout(timer);
