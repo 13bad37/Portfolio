@@ -386,12 +386,10 @@ body {
   
   /* Enhanced modal close button positioning */
   .modal-close-button {
-    position: fixed !important;
-    top: max(1.5rem, env(safe-area-inset-top, 1.5rem)) !important;
-    right: max(1.5rem, env(safe-area-inset-right, 1.5rem)) !important;
-    z-index: 10001 !important;
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    z-index: 100001;
   }
 
   /* Gesture-friendly interactions */
