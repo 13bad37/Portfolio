@@ -1,9 +1,14 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Server, Database, Settings, Code, Puzzle } from 'lucide-react';
+// Individual icon imports for better tree shaking and bundle size
+import Code from 'lucide-react/dist/esm/icons/code';
+import Server from 'lucide-react/dist/esm/icons/server';
+import Database from 'lucide-react/dist/esm/icons/database';
+import Settings from 'lucide-react/dist/esm/icons/settings';
+import Puzzle from 'lucide-react/dist/esm/icons/puzzle';
+import Braces from 'lucide-react/dist/esm/icons/braces';
 import FloatingElements from '../animations/FloatingElements';
 import AnimatedDivider from '../ui/AnimatedDivider';
-import AppleButton from '../ui/AppleButton';
 
 interface Skill {
   name: string;
@@ -48,6 +53,12 @@ const skills: Record<string, Skill[]> = {
     { name: 'Problem Solving', level: 85, category: 'other' },
     { name: 'Data Structures', level: 70, category: 'other' },
     { name: 'Algorithms', level: 65, category: 'other' },
+  ],
+  languages: [
+    { name: 'Python', level: 85, category: 'languages' },
+    { name: 'JavaScript', level: 80, category: 'languages' },
+    { name: 'Java', level: 75, category: 'languages' },
+    { name: 'C#', level: 75, category: 'languages' },
   ],
 };
 
@@ -219,7 +230,8 @@ const SkillCard: React.FC<SkillCardProps> = ({ icon, title, skills, isActive, on
 const Skills: React.FC = memo(() => {
   const [activeSkill, setActiveSkill] = useState<string>('frontend');
 
-  const skillCategories = [
+  // Memoize the skill categories array to prevent recreation on every render
+  const skillCategories = useMemo(() => [
     {
       key: 'frontend',
       title: 'Frontend',
@@ -249,12 +261,23 @@ const Skills: React.FC = memo(() => {
       title: 'Problem Solving',
       icon: <Puzzle className="w-6 h-6 text-primary-400" />,
       skills: skills.other
+    },
+    {
+      key: 'languages',
+      title: 'Coding Languages',
+      icon: <Braces className="w-6 h-6 text-primary-400" />,
+      skills: skills.languages
     }
-  ];
+  ], []); // Empty deps since skills data is static
+
+  // Memoize the click handler to prevent SkillCard re-renders
+  const handleSkillClick = useCallback((skillKey: string) => {
+    setActiveSkill(skillKey);
+  }, []);
 
   return (
     <section id="skills" className="py-16 sm:py-20 lg:py-24 relative content-auto">
-      <FloatingElements />
+      <FloatingElements variant="geometric" density="medium" />
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
@@ -311,28 +334,12 @@ const Skills: React.FC = memo(() => {
               title={category.title}
               skills={category.skills}
               isActive={activeSkill === category.key}
-              onClick={() => setActiveSkill(category.key)}
+              onClick={() => handleSkillClick(category.key)}
               index={index}
             />
           ))}
         </motion.div>
 
-        <motion.div 
-          className="mt-16 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.6, type: "spring", damping: 25, stiffness: 400 }}
-          viewport={{ once: true }}
-        >
-          <AppleButton
-            href="#projects"
-            variant="primary"
-            size="lg"
-            icon={<Globe className="w-5 h-5" />}
-          >
-            View My Projects
-          </AppleButton>
-        </motion.div>
       </div>
     </section>
   );

@@ -1,11 +1,17 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Code, ExternalLink, Github, X, ChevronRight } from 'lucide-react';
+// Individual icon imports for better tree shaking and bundle size
+import Code from 'lucide-react/dist/esm/icons/code';
+import ExternalLink from 'lucide-react/dist/esm/icons/external-link';
+import Github from 'lucide-react/dist/esm/icons/github';
+import X from 'lucide-react/dist/esm/icons/x';
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
 import { useHoverState } from '../../hooks/useMousePosition';
 import { fadeIn } from '../../hooks/useAnimation';
 import LazyImage from '../ui/LazyImage';
 import Portal from '../ui/Portal';
 import AnimatedDivider from '../ui/AnimatedDivider';
+import FloatingElements from '../animations/FloatingElements';
 import { modalScrollManager } from '../../utils/modalScrollManager';
 
 interface Project {
@@ -265,7 +271,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
         {/* Enhanced close button with better positioning */}
         <motion.button 
           onClick={onClose}
-          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
+          className="absolute z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
           aria-label="Close project details"
           style={{
             minWidth: '56px',
@@ -273,8 +279,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            top: 'max(1rem, env(safe-area-inset-top, 1rem))',
-            right: 'max(1rem, env(safe-area-inset-right, 1rem))'
+            top: '1rem',
+            right: '1rem'
           }}
           whileHover={{ 
             scale: 1.05,
@@ -452,15 +458,22 @@ const Projects: React.FC = memo(() => {
   const [currentCategory, setCurrentCategory] = useState<string>('All');
   const [isFilterTransitioning, setIsFilterTransitioning] = useState(false);
 
-  const categories = ['All', ...new Set(projects.map(p => p.category))];
+  // Memoize categories array to prevent recreation on every render
+  const categories = useMemo(() => 
+    ['All', ...new Set(projects.map(p => p.category))], 
+    [] // Empty deps since projects array is static
+  );
   
-  // Fixed filtering logic - ensures proper state management and smooth transitions
-  const filteredProjects = currentCategory === 'All'
-    ? projects
-    : projects.filter(p => p.category === currentCategory);
+  // Memoize filtered projects for better performance
+  const filteredProjects = useMemo(() => 
+    currentCategory === 'All' 
+      ? projects 
+      : projects.filter(p => p.category === currentCategory),
+    [currentCategory]
+  );
 
-  // Enhanced category change handler with transition management
-  const handleCategoryChange = (category: string) => {
+  // Enhanced category change handler with transition management (memoized for performance)
+  const handleCategoryChange = useCallback((category: string) => {
     if (category === currentCategory) return;
     
     setIsFilterTransitioning(true);
@@ -470,12 +483,13 @@ const Projects: React.FC = memo(() => {
     setTimeout(() => {
       setIsFilterTransitioning(false);
     }, 300);
-  };
+  }, [currentCategory]);
 
   const titleAnimation = fadeIn('up');
 
   return (
     <section id="projects" className="py-12 sm:py-16 lg:py-20 relative content-auto" role="region" aria-labelledby="projects-heading">
+      <FloatingElements variant="code" density="light" />
       <div className="absolute inset-0 bg-gradient-to-br from-dark-600/20 via-dark-500/10 to-dark-600/20" aria-hidden="true"></div>
       
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -518,10 +532,10 @@ const Projects: React.FC = memo(() => {
           layout
           transition={{ duration: 0.3, ease: "easeInOut" }}
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="sync">
             {filteredProjects.map((project, index) => (
               <motion.div
-                key={project.id}
+                key={`${project.id}-${currentCategory}`}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ 
                   opacity: isFilterTransitioning ? 0 : 1, 
@@ -575,12 +589,22 @@ const Projects: React.FC = memo(() => {
       
       <AnimatedDivider type="dots" />
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedProject && (
           <Portal>
             <ProjectDetail 
               project={selectedProject} 
-              onClose={() => setSelectedProject(null)} 
+              onClose={() => {
+                setSelectedProject(null);
+                // Add a small delay to prevent rubber banding
+                setTimeout(() => {
+                  try {
+                    window.dispatchEvent(new CustomEvent('modal:cleanup'));
+                  } catch {
+                    // Event dispatch failed
+                  }
+                }, 300);
+              }} 
             />
           </Portal>
         )}

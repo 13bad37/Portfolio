@@ -116,29 +116,10 @@ class ModalScrollManager {
     
     document.body.classList.remove('modal-open-mobile');
     
-    // ENHANCED: More reliable scroll position restoration with better mobile handling
-    setTimeout(() => {
-      requestAnimationFrame(() => {
-        // Use multiple methods to ensure scroll restoration works
-        window.scrollTo({ top: this.originalScrollY, behavior: 'instant' });
-        document.documentElement.scrollTop = this.originalScrollY;
-        document.body.scrollTop = this.originalScrollY;
-        
-        // Triple-check scroll restoration with fallback
-        setTimeout(() => {
-          const currentScroll = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
-          if (Math.abs(currentScroll - this.originalScrollY) > 5) {
-            window.scrollTo({ top: this.originalScrollY, behavior: 'instant' });
-            // Force scroll restoration if still not correct
-            setTimeout(() => {
-              window.scrollTo({ top: this.originalScrollY, behavior: 'instant' });
-              // Trigger resize event to help components recalculate
-              window.dispatchEvent(new Event('resize'));
-            }, 100);
-          }
-        }, 50);
-      });
-    }, 10);
+    // Simplified scroll restoration to reduce rubber banding
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: this.originalScrollY, behavior: 'auto' });
+    });
   }
 
   private unlockDesktop(): void {
@@ -155,9 +136,12 @@ class ModalScrollManager {
     
     document.body.classList.remove('modal-open-desktop');
     
-    // Restore scroll position
+    // Gentler scroll restoration to prevent rubber banding
     requestAnimationFrame(() => {
-      window.scrollTo(0, this.originalScrollY);
+      window.scrollTo({ 
+        top: this.originalScrollY, 
+        behavior: 'auto' 
+      });
     });
   }
 
