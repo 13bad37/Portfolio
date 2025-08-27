@@ -271,17 +271,14 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
         {/* Enhanced close button with better positioning */}
         <motion.button 
           onClick={onClose}
-          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
+          className="absolute top-4 right-4 z-[100000] p-3 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large group"
           aria-label="Close project details"
           style={{
-            minWidth: '56px',
-            minHeight: '56px',
+            minWidth: '48px',
+            minHeight: '48px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center',
-            top: '1rem',
-            right: '1rem',
-            zIndex: 100001
+            justifyContent: 'center'
           }}
           whileHover={{ 
             scale: 1.05,
@@ -293,7 +290,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             transition: { type: "spring", damping: 30, stiffness: 500 }
           }}
         >
-          <X size={24} strokeWidth={2} className="group-hover:text-red-100 transition-colors" />
+          <X size={20} strokeWidth={2} className="group-hover:text-red-100 transition-colors" />
         </motion.button>
 
         {/* Enhanced hero image section */}
