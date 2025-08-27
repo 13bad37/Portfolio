@@ -85,7 +85,6 @@ const projects: Project[] = [
       "Appointment scheduling and doctor assignment",
       "Medical staff and department management",
       "Prescription and treatment tracking",
-      "Billing and payment processing system"
     ]
   }
 ];
