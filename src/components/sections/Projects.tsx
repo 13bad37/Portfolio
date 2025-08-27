@@ -271,7 +271,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
         {/* Enhanced close button with better positioning */}
         <motion.button 
           onClick={onClose}
-          className="absolute z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
+          className="fixed z-[100000] p-4 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-all duration-200 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button group"
           aria-label="Close project details"
           style={{
             minWidth: '56px',
@@ -280,7 +280,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
             alignItems: 'center',
             justifyContent: 'center',
             top: '1rem',
-            right: '1rem'
+            right: '1rem',
+            zIndex: 100001
           }}
           whileHover={{ 
             scale: 1.05,
