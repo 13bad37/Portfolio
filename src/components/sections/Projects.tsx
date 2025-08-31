@@ -206,15 +206,19 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(({ project, onClose }) => {
   const [isClosing, setIsClosing] = React.useState(false);
   
-  // Instant close handler with no animations or delays
+  // Enhanced close handler with immediate cleanup to prevent rubber banding
   const handleClose = React.useCallback(() => {
     if (isClosing) return;
     
     setIsClosing(true);
     
-    // Immediate close - no delays or animations
+    // Critical: Unlock scroll BEFORE any state changes to prevent rubber banding
     modalScrollManager.unlock();
-    onClose();
+    
+    // Use requestAnimationFrame for immediate but smooth close
+    requestAnimationFrame(() => {
+      onClose();
+    });
   }, [onClose, isClosing]);
 
   React.useEffect(() => {

@@ -149,31 +149,53 @@ class ModalScrollManager {
     const html = document.documentElement;
     const targetScrollY = this.originalScrollY;
 
-    // Phase 1: Remove event listeners immediately to prevent conflicts
+    // Phase 1: Immediate event listener removal to prevent conflicts
     document.removeEventListener('wheel', this.handleWheel);
     document.removeEventListener('keydown', this.handleKeydown);
     document.removeEventListener('scroll', this.handleScroll);
     
-    // Phase 2: Coordinated style restoration with precise timing
-    this.restoreTimer = window.setTimeout(() => {
-      // Step 1: Clear all positioning styles
-      body.style.removeProperty('overflow');
-      body.style.removeProperty('position');
-      body.style.removeProperty('top');
+    // Phase 2: Force scroll behavior to auto BEFORE any style changes
+    html.style.setProperty('scroll-behavior', 'auto', 'important');
+    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
+    
+    // Phase 3: Immediate scroll restoration BEFORE removing position fixed
+    // This prevents the layout shift that causes rubber banding
+    window.scrollTo(0, targetScrollY);
+    
+    // Phase 4: Synchronous style restoration in correct order
+    requestAnimationFrame(() => {
+      // Remove positioning styles in specific order to prevent layout thrashing
+      body.style.removeProperty('position'); // Remove fixed positioning first
+      body.style.removeProperty('top');      // Then remove top offset
       body.style.removeProperty('left');
       body.style.removeProperty('right');
       body.style.removeProperty('width');
+      
+      // Remove overflow last to prevent scroll jump
+      body.style.removeProperty('overflow');
       body.style.removeProperty('padding-right');
       
+      // Clean up HTML styles
       html.style.removeProperty('overflow');
-      html.style.removeProperty('scroll-behavior');
       
+      // Remove classes
       body.classList.remove('modal-open-desktop');
       
-      // Step 2: Smooth scroll restoration with fallbacks
-      this.restoreScrollPosition(targetScrollY);
-      
-    }, 50); // Small delay to ensure DOM stability
+      // Phase 5: Final verification and cleanup
+      requestAnimationFrame(() => {
+        // Ensure scroll position is correct
+        const currentScroll = this.getScrollPosition();
+        if (Math.abs(currentScroll - targetScrollY) > 1) {
+          window.scrollTo(0, targetScrollY);
+        }
+        
+        // Reset scroll behavior to allow smooth scrolling again
+        html.style.removeProperty('scroll-behavior');
+        document.documentElement.style.removeProperty('scroll-behavior');
+        
+        this.finalizeUnlock();
+      });
+    });
   }
 
   private handleTouchStart(e: TouchEvent): void {
@@ -261,32 +283,10 @@ class ModalScrollManager {
   }
 
   private restoreScrollPosition(targetY: number): void {
-    // Multi-phase scroll restoration to prevent rubber banding
-    
-    // Phase 1: Instant restoration without animation
+    // Simplified immediate restoration to prevent rubber banding
+    // The new unlockDesktop method handles this more effectively
     window.scrollTo(0, targetY);
-    
-    // Phase 2: Verify and correct if needed
-    const verifyTimer = window.setTimeout(() => {
-      const currentScroll = this.getScrollPosition();
-      
-      if (Math.abs(currentScroll - targetY) > 5) {
-        // Fallback restoration with RAF for smoothness
-        requestAnimationFrame(() => {
-          window.scrollTo({
-            top: targetY,
-            behavior: 'auto'
-          });
-          
-          // Final verification
-          requestAnimationFrame(() => {
-            this.finalizeUnlock();
-          });
-        });
-      } else {
-        this.finalizeUnlock();
-      }
-    }, 100);
+    this.finalizeUnlock();
   }
 
   private finalizeUnlock(): void {
