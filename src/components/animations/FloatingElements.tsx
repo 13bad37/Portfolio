@@ -15,7 +15,7 @@ const FloatingElements: React.FC<FloatingElementsProps> = ({
   // Optimized mouse tracking with throttling and position diffing
   const handleMouseMove = useCallback((e: MouseEvent) => {
     // Mouse tracking logic preserved for future use
-    e.preventDefault();
+    // Note: Cannot use preventDefault in passive listeners
   }, []);
 
   useEffect(() => {
@@ -219,7 +219,7 @@ const FloatingElements: React.FC<FloatingElementsProps> = ({
   const renderCodeElements = () => {
     const codeSnippets = [
       { text: '{ }', color: 'text-blue-400', glow: 'drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]' },
-      { text: '< />', color: 'text-green-400', glow: 'drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]' },
+      { text: '</>', color: 'text-green-400', glow: 'drop-shadow-[0_0_10px_rgba(34,197,94,0.5)]' },
       { text: '( )', color: 'text-yellow-400', glow: 'drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]' },
       { text: '[ ]', color: 'text-purple-400', glow: 'drop-shadow-[0_0_10px_rgba(168,85,247,0.5)]' },
       { text: '=>', color: 'text-pink-400', glow: 'drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]' },

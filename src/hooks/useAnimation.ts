@@ -1,6 +1,5 @@
-import { useInView } from 'react-intersection-observer';
-import { useAnimation, Variant } from 'framer-motion';
-import { useEffect } from 'react';
+import { useAnimation, useInView, Variant } from 'framer-motion';
+import { useEffect, useRef } from 'react';
 
 interface AnimationConfig {
   hidden: Variant;
@@ -18,7 +17,11 @@ export const useAnimationOnScroll = ({
   delay = 0,
 }: AnimationConfig) => {
   const controls = useAnimation();
-  const [ref, inView] = useInView({ threshold, triggerOnce });
+  const ref = useRef(null);
+  const inView = useInView(ref, { 
+    once: triggerOnce,
+    amount: threshold
+  });
 
   useEffect(() => {
     if (inView) {

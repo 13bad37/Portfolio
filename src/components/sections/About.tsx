@@ -47,7 +47,8 @@ const About: React.FC = memo(() => {
           const translateX = x * depth;
           const translateY = y * depth;
           
-          (el as HTMLElement).style.transform = `translate(${translateX}px, ${translateY}px)`;
+          // Use translate3d for hardware acceleration and better performance
+          (el as HTMLElement).style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
         });
         
         rafId = null;

@@ -45,7 +45,8 @@ const Contact: React.FC = memo(() => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="flex flex-col items-center mb-16 text-center"
-          {...titleAnimation}
+          ref={titleAnimation.ref}
+          animate={titleAnimation.controls}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">Get In Touch</span>
           <h2 id="contact-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Let's Connect</h2>
@@ -58,7 +59,8 @@ const Contact: React.FC = memo(() => {
 
         <motion.div 
           className="max-w-6xl mx-auto"
-          {...contactInfoAnimation}
+          ref={contactInfoAnimation.ref}
+          animate={contactInfoAnimation.controls}
         >
           {/* Enhanced Location and Weather widget */}
           <motion.div 
@@ -143,13 +145,13 @@ const Contact: React.FC = memo(() => {
           <motion.div 
             className="bg-dark-600/80 backdrop-blur-xl rounded-3xl border border-dark-400/50 p-8 lg:p-12 text-center shadow-xl"
             initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8, type: "spring", damping: 25, stiffness: 400 }}
             whileHover={{ 
               boxShadow: "0 30px 60px -10px rgba(139, 92, 246, 0.2)",
               transition: { type: "spring", damping: 25, stiffness: 400 }
             }}
-            {...socialAnimation}
+            ref={socialAnimation.ref}
+            animate={socialAnimation.controls}
           >
             <h3 className="text-2xl lg:text-3xl font-bold text-white mb-4">Ready to Start a Conversation?</h3>
             <p className="text-gray-300 mb-10 max-w-2xl mx-auto text-lg leading-relaxed">

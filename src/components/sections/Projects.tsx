@@ -19,6 +19,7 @@ interface Project {
   title: string;
   description: string;
   image: string;
+  webpImage?: string;
   category: string;
   technologies: string[];
   github?: string;
@@ -32,6 +33,7 @@ const projects: Project[] = [
     title: "Movie Application",
     description: "A comprehensive movie browsing and discovery application with advanced search and filtering capabilities.",
     image: "https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
+    webpImage: "https://images.pexels.com/photos/7991579/pexels-photo-7991579.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1&fm=webp",
     category: "Web Development",
     technologies: ["React", "JavaScript", "CSS3", "HTML5", "API Integration"],
     github: "https://github.com/13bad37/Movie-Application",
@@ -47,6 +49,7 @@ const projects: Project[] = [
     title: "Server Express Application",
     description: "A robust server-side application built with Express.js featuring RESTful APIs and database integration.",
     image: "https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
+    webpImage: "https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1&fm=webp",
     category: "Backend Development",
     technologies: ["Node.js", "Express.js", "MongoDB", "RESTful APIs"],
     github: "https://github.com/13bad37/Server-Side-Express-Application",
@@ -62,6 +65,7 @@ const projects: Project[] = [
     title: "Personal Portfolio",
     description: "This sophisticated portfolio website you're currently viewing, featuring advanced animations and interactive elements.",
     image: "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
+    webpImage: "https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1&fm=webp",
     category: "Web Development",
     technologies: ["React", "TypeScript", "CSS Animations", "Tailwind CSS"],
     github: "https://github.com/13bad37/Portfolio",
@@ -77,6 +81,7 @@ const projects: Project[] = [
     title: "Hospital Management System",
     description: "A comprehensive hospital management system built with C# for managing patient records, appointments, and medical staff operations.",
     image: "https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1",
+    webpImage: "https://images.pexels.com/photos/263402/pexels-photo-263402.jpeg?auto=compress&cs=tinysrgb&w=600&h=400&dpr=1&fm=webp",
     category: "Backend Development",
     technologies: ["C#", ".NET Framework", "SQL Server", "Windows Forms"],
     github: "https://github.com/13bad37/Hospital-Management-System",
@@ -125,6 +130,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
       <div className="relative h-48 overflow-hidden">
         <LazyImage 
           src={project.image}
+          webpSrc={project.webpImage}
           alt={project.title}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 transform-gpu"
         />
@@ -289,12 +295,11 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
 
         {/* Enhanced hero image section */}
         <div className="relative h-72 sm:h-96 overflow-hidden">
-          <img 
-            src={project.image} 
+          <LazyImage 
+            src={project.image}
+            webpSrc={project.webpImage}
             alt={project.title} 
             className="w-full h-full object-cover"
-            loading="lazy"
-            decoding="async"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-dark-500/90 via-dark-500/40 to-transparent" aria-hidden="true"></div>
           
@@ -487,7 +492,8 @@ const Projects: React.FC = memo(() => {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
           className="flex flex-col items-center mb-12 text-center"
-          {...titleAnimation}
+          ref={titleAnimation.ref}
+          animate={titleAnimation.controls}
         >
           <span className="text-primary-500 font-mono text-sm uppercase tracking-wider mb-2">My Work</span>
           <h2 id="projects-heading" className="text-3xl md:text-4xl font-bold mb-4 heading-enhanced">Featured Projects</h2>

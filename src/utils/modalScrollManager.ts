@@ -67,8 +67,8 @@ class ModalScrollManager {
     html.style.overflow = 'hidden';
     
     // Prevent touch scrolling on the background
-    document.addEventListener('touchstart', this.handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
+    document.addEventListener('touchstart', this.handleTouchStart, { passive: true });
+    document.addEventListener('touchmove', this.handleTouchMove, { passive: true });
     
     // Add mobile-specific class for CSS targeting
     document.body.classList.add('modal-open-mobile');
@@ -96,9 +96,9 @@ class ModalScrollManager {
     html.style.setProperty('scroll-behavior', 'auto', 'important');
     
     // Prevent all scroll-related events
-    document.addEventListener('wheel', this.handleWheel, { passive: false });
-    document.addEventListener('keydown', this.handleKeydown, { passive: false });
-    document.addEventListener('scroll', this.handleScroll, { passive: false });
+    document.addEventListener('wheel', this.handleWheel, { passive: true });
+    document.addEventListener('keydown', this.handleKeydown, { passive: true });
+    document.addEventListener('scroll', this.handleScroll, { passive: true });
     
     body.classList.add('modal-open-desktop');
   }
@@ -214,7 +214,9 @@ class ModalScrollManager {
 
   private handleTouchMove(e: TouchEvent): void {
     if (this.preventTouch) {
-      e.preventDefault();
+      if (e.cancelable) {
+        e.preventDefault();
+      }
       e.stopPropagation();
       return;
     }
@@ -232,12 +234,16 @@ class ModalScrollManager {
       // Prevent overscroll at top and bottom of modal
       if ((scrollTop <= 1 && deltaY > 0) || 
           (scrollTop + clientHeight >= scrollHeight - 1 && deltaY < 0)) {
-        e.preventDefault();
+        if (e.cancelable) {
+          e.preventDefault();
+        }
         e.stopPropagation();
       }
     } else {
       // Always prevent scrolling outside modal on mobile
-      e.preventDefault();
+      if (e.cancelable) {
+        e.preventDefault();
+      }
       e.stopPropagation();
     }
   }
@@ -246,7 +252,7 @@ class ModalScrollManager {
     const target = e.target as HTMLElement;
     const modalContent = target.closest('[data-modal-content]');
     
-    if (!modalContent) {
+    if (!modalContent && e.cancelable) {
       e.preventDefault();
     }
   }
@@ -257,7 +263,7 @@ class ModalScrollManager {
       const target = e.target as HTMLElement;
       const modalContent = target.closest('[data-modal-content]');
       
-      if (!modalContent) {
+      if (!modalContent && e.cancelable) {
         e.preventDefault();
       }
     }
@@ -266,7 +272,9 @@ class ModalScrollManager {
   private handleScroll = (e: Event): void => {
     // Prevent any scroll events during modal lock
     if (this.isLocked && !this.isUnlocking) {
-      e.preventDefault();
+      if (e.cancelable) {
+        e.preventDefault();
+      }
       e.stopImmediatePropagation();
     }
   };
