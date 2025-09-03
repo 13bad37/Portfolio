@@ -413,6 +413,11 @@ body {
     top: 1.5rem;
     right: 1.5rem;
     z-index: 100001;
+    min-width: 48px;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Gesture-friendly interactions */
@@ -487,12 +492,17 @@ body {
     -webkit-overflow-scrolling: auto;
   }
   
-  /* Ensure modal close button is always accessible */
+  /* Ensure modal close button is always accessible on mobile */
   .modal-close-button {
     position: fixed !important;
     top: max(1rem, env(safe-area-inset-top, 1rem)) !important;
     right: max(1rem, env(safe-area-inset-right, 1rem)) !important;
-    z-index: 10001 !important;
+    z-index: 100001 !important;
+    min-width: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
 }
 
@@ -506,6 +516,9 @@ body {
     /* Ensure button is fully visible and not cropped */
     min-width: 56px !important;
     min-height: 56px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     /* Add extra margin from edges to prevent clipping */
     margin-top: 0 !important;
     margin-right: 0 !important;

@@ -67,8 +67,8 @@ class ModalScrollManager {
     html.style.overflow = 'hidden';
     
     // Prevent touch scrolling on the background
-    document.addEventListener('touchstart', this.handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+    document.addEventListener('touchstart', this.handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', this.handleTouchMove, { passive: false });
     
     // Add mobile-specific class for CSS targeting
     document.body.classList.add('modal-open-mobile');
@@ -95,10 +95,9 @@ class ModalScrollManager {
     html.style.setProperty('overflow', 'hidden', 'important');
     html.style.setProperty('scroll-behavior', 'auto', 'important');
     
-    // Prevent all scroll-related events
-    document.addEventListener('wheel', this.handleWheel, { passive: true });
-    document.addEventListener('keydown', this.handleKeydown, { passive: true });
-    document.addEventListener('scroll', this.handleScroll, { passive: true });
+    // Prevent scroll-related events (use non-passive to allow preventDefault)
+    document.addEventListener('wheel', this.handleWheel, { passive: false });
+    document.addEventListener('keydown', this.handleKeydown, { passive: false });
     
     body.classList.add('modal-open-desktop');
   }
@@ -152,49 +151,38 @@ class ModalScrollManager {
     // Phase 1: Immediate event listener removal to prevent conflicts
     document.removeEventListener('wheel', this.handleWheel);
     document.removeEventListener('keydown', this.handleKeydown);
-    document.removeEventListener('scroll', this.handleScroll);
     
     // Phase 2: Force scroll behavior to auto BEFORE any style changes
     html.style.setProperty('scroll-behavior', 'auto', 'important');
-    document.documentElement.style.setProperty('scroll-behavior', 'auto', 'important');
     
-    // Phase 3: Immediate scroll restoration BEFORE removing position fixed
-    // This prevents the layout shift that causes rubber banding
+    // Phase 3: Restore scroll position WHILE body is still fixed to prevent jump
     window.scrollTo(0, targetScrollY);
     
-    // Phase 4: Synchronous style restoration in correct order
+    // Phase 4: Remove fixed positioning and restore styles atomically
+    // Use synchronous style changes to prevent visual flash
+    body.style.removeProperty('position');
+    body.style.removeProperty('top');
+    body.style.removeProperty('left');
+    body.style.removeProperty('right');
+    body.style.removeProperty('width');
+    body.style.removeProperty('overflow');
+    body.style.removeProperty('padding-right');
+    html.style.removeProperty('overflow');
+    body.classList.remove('modal-open-desktop');
+    
+    // Phase 5: Immediate scroll verification and final cleanup
     requestAnimationFrame(() => {
-      // Remove positioning styles in specific order to prevent layout thrashing
-      body.style.removeProperty('position'); // Remove fixed positioning first
-      body.style.removeProperty('top');      // Then remove top offset
-      body.style.removeProperty('left');
-      body.style.removeProperty('right');
-      body.style.removeProperty('width');
+      // Verify scroll position is correct
+      const currentScroll = this.getScrollPosition();
+      if (Math.abs(currentScroll - targetScrollY) > 2) {
+        window.scrollTo(0, targetScrollY);
+      }
       
-      // Remove overflow last to prevent scroll jump
-      body.style.removeProperty('overflow');
-      body.style.removeProperty('padding-right');
-      
-      // Clean up HTML styles
-      html.style.removeProperty('overflow');
-      
-      // Remove classes
-      body.classList.remove('modal-open-desktop');
-      
-      // Phase 5: Final verification and cleanup
-      requestAnimationFrame(() => {
-        // Ensure scroll position is correct
-        const currentScroll = this.getScrollPosition();
-        if (Math.abs(currentScroll - targetScrollY) > 1) {
-          window.scrollTo(0, targetScrollY);
-        }
-        
-        // Reset scroll behavior to allow smooth scrolling again
+      // Reset scroll behavior with a small delay to avoid conflicts
+      setTimeout(() => {
         html.style.removeProperty('scroll-behavior');
-        document.documentElement.style.removeProperty('scroll-behavior');
-        
         this.finalizeUnlock();
-      });
+      }, 16); // One frame delay
     });
   }
 
@@ -268,16 +256,6 @@ class ModalScrollManager {
       }
     }
   }
-
-  private handleScroll = (e: Event): void => {
-    // Prevent any scroll events during modal lock
-    if (this.isLocked && !this.isUnlocking) {
-      if (e.cancelable) {
-        e.preventDefault();
-      }
-      e.stopImmediatePropagation();
-    }
-  };
 
   private getScrollPosition(): number {
     return window.pageYOffset || 

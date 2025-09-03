@@ -211,12 +211,19 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = memo(({
 
 const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(({ project, onClose }) => {
   const [isClosing, setIsClosing] = React.useState(false);
+  const backdropMouseDownRef = React.useRef(false);
+  const [backdropInteractive, setBackdropInteractive] = React.useState(false);
   
   // Enhanced close handler with immediate cleanup to prevent rubber banding
   const handleClose = React.useCallback(() => {
     if (isClosing) return;
     
     setIsClosing(true);
+    
+    // Critical: Dispatch close event FIRST to ensure header shows immediately
+    try {
+      window.dispatchEvent(new CustomEvent('project:close'));
+    } catch {}
     
     // Critical: Unlock scroll BEFORE any state changes to prevent rubber banding
     modalScrollManager.unlock();
@@ -229,6 +236,8 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
 
   React.useEffect(() => {
     modalScrollManager.lock();
+    // Defer enabling backdrop interaction to avoid open-click closing the modal
+    const t = setTimeout(() => setBackdropInteractive(true), 0);
     
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -240,6 +249,7 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
     
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      clearTimeout(t);
       // Emergency cleanup only if component unmounts unexpectedly
       if (!isClosing) {
         modalScrollManager.unlock();
@@ -257,7 +267,21 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
         minHeight: '100vh',
         minWidth: '100vw'
       }}
-      onClick={handleClose}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) {
+          backdropMouseDownRef.current = true;
+        }
+      }}
+      onMouseUp={(e) => {
+        if (
+          backdropInteractive &&
+          backdropMouseDownRef.current &&
+          e.target === e.currentTarget
+        ) {
+          handleClose();
+        }
+        backdropMouseDownRef.current = false;
+      }}
       role="dialog"
       aria-modal="true"
       aria-labelledby="project-detail-title"
@@ -275,20 +299,11 @@ const ProjectDetail: React.FC<{ project: Project; onClose: () => void }> = memo(
           margin: 'auto'
         }}
       >
-        {/* Enhanced close button with modal-relative positioning - no animations */}
+        {/* Enhanced close button - positioned via CSS for consistency */}
         <button 
           onClick={handleClose}
-          className="absolute z-[10] p-3 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-colors duration-100 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
+          className="p-3 bg-dark-500/95 backdrop-blur-md rounded-2xl text-white hover:bg-red-500/90 transition-colors duration-100 shadow-xl border-2 border-dark-400/70 touch-target-large modal-close-button"
           aria-label="Close project details"
-          style={{
-            minWidth: '48px',
-            minHeight: '48px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            top: '1rem',
-            right: '1rem'
-          }}
         >
           <X size={20} strokeWidth={2} className="transition-colors" />
         </button>
